@@ -8,7 +8,7 @@ npm install canvas-txt --save
 ```
 
 ## Usage
-```
+```javascript
 import canvasTxt from "canvas-txt/index.js";
 
 var c = document.getElementById("myCanvas");
@@ -39,7 +39,7 @@ canvasTxt.drawText(ctx,txt,100,200,200,200);
 
 ## Example
 
-```
+```javascript
 import canvasTxt from "canvas-txt/index.js";
 
 var c = document.getElementById("myCanvas");

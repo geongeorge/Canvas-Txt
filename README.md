@@ -1,6 +1,6 @@
 # Canvas Txt 
 
-A library to print text on HTML5 canvas 🆎
+A library to print multiline text on HTML5 canvas with better line breaks and alignments 🆎
 
 ## Install
 ```

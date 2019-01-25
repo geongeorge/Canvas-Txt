@@ -2,6 +2,10 @@
 
 A library to print text on HTML5 canvas 🆎
 
+## Install
+```
+npm install canvas-txt --save
+```
 
 ## Usage
 ```

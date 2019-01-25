@@ -1,14 +1,14 @@
 {
-    "name": "@geongeorge/canvas-text",
-    "version": "1.0.0",
-    "description": "Enables rendering text in HTML5 canvas in a box and auto line breaks",
+    "name": "canvas-txt",
+    "version": "1.0.2",
+    "description": "Enables rendering multiline text in HTML5 canvas in a box and auto line breaks",
     "license": "MIT",
     "repository": "geongeorge/Canvas-Text",
     "main": "index.js",
     "keywords": [
-        "tiny",
+        "multiline",
         "npm",
-        "package",
-        "bamblehorse"
+        "text",
+        "canvas"
     ]
 }

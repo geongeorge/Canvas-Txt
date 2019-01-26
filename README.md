@@ -9,7 +9,7 @@ npm install canvas-txt --save
 
 ## Usage
 ```javascript
-import canvasTxt from "canvas-txt/index.js";
+import canvasTxt from "canvas-txt";
 
 var c = document.getElementById("myCanvas");
 var ctx = c.getContext("2d");
@@ -40,7 +40,7 @@ canvasTxt.drawText(ctx,txt,100,200,200,200);
 ## Example
 
 ```javascript
-import canvasTxt from "canvas-txt/index.js";
+import canvasTxt from "canvas-txt";
 
 var c = document.getElementById("myCanvas");
 var ctx = c.getContext("2d");

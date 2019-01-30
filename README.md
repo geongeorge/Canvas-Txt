@@ -1,4 +1,4 @@
-# Canvas Txt 
+# Canvas Txt
 
 A library to print multiline text on HTML5 canvas with better line breaks and alignments 🆎
 
@@ -35,7 +35,6 @@ canvasTxt.drawText(ctx,txt,100,200,200,200);
 | Method| Description      |
 | :--------- | :--------------|
 | `drawText(ctx,text,x,y,width,height)`      | To draw the text to the canvas |
-| `arrayMaker(text)` | Split the text into an array based on `\n`|
 
 ## Example
 

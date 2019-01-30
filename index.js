@@ -99,31 +99,6 @@ export default {
     },
 
     arrayMaker: function(mytext) {
-        //<br> checker function generate a array
-        var textarray = []
-        var temptext = mytext;
-            var textlen=0;
-            var textcounter=0;
-            var texttoprint=""
-            while(textcounter< mytext.length) {
-                //\n checks
-                if(temptext[textlen]==="\n") {
-                    texttoprint = temptext.substr(0,textlen)
-                    textlen+=1;
-                    textcounter+=1;
-                    temptext = temptext.substr(textlen)
-                    textlen = 0;
-                    textarray.push(texttoprint);
-                } else {
-                    textcounter++; 
-                    textlen++;
-                } 
-            }
-            if(temptext.length>0){
-                textarray.push(temptext);
-            }
-            return textarray
-
+        return mytext.split('\n');
     }
-
 }

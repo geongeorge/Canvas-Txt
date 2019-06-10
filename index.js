@@ -60,6 +60,18 @@ export default {
                             texttoprint = temptext.substr(0,textlen)
                             textpixlen = ctx.measureText(temptext.substr(0,textlen)).width
                         }
+                          //if statement ensures a new line only happens at a space, and not amidst a word
+                          if(temptext.substr(textlen,1) != " "){
+                            var backup = textlen;
+                            while(temptext.substr(textlen,1) != " " && textlen != 0){
+                              textlen--;
+                            }
+                            if(textlen == 0){
+                              textlen = backup;
+                            }
+                            texttoprint = temptext.substr(0,textlen)
+                          }
+                        
                         temptext = temptext.substr(textlen)
                         textwidth = ctx.measureText(temptext).width
                         textarray.push(texttoprint)

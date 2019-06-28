@@ -17,7 +17,7 @@ import canvasTxt from "canvas-txt";
 var c = document.getElementById("myCanvas");
 var ctx = c.getContext("2d");
 
-var txt = "Lorem \n ipsum dolor sit amet";
+var txt = "Lorem ipsum dolor sit amet";
 
 canvasTxt.drawText(ctx,txt,100,200,200,200);
 //canvasTxt.drawText(ctx,txt,x,y,width,height);
@@ -38,7 +38,6 @@ canvasTxt.drawText(ctx,txt,100,200,200,200);
 | Method| Description      |
 | :--------- | :--------------|
 | `drawText(ctx,text,x,y,width,height)`      | To draw the text to the canvas |
-| `arrayMaker(text)` | Split the text into an array based on `\n`|
 
 ## Example
 

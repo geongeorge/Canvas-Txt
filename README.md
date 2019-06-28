@@ -8,6 +8,9 @@ npm install canvas-txt --save
 ```
 
 ## Usage
+```html
+<canvas id="myCanvas" width="500" height="500"></canvas>
+```
 ```javascript
 import canvasTxt from "canvas-txt";
 

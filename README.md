@@ -19,6 +19,8 @@ var ctx = c.getContext("2d");
 
 var txt = "Lorem ipsum dolor sit amet";
 
+canvasTxt.textSize = 24;
+
 canvasTxt.drawText(ctx,txt,100,200,200,200);
 //canvasTxt.drawText(ctx,txt,x,y,width,height);
 ```

@@ -7,15 +7,15 @@ export default {
     drawText: function(ctx,mytext,x,y,width,height) {
 
 
-                let loc = [x,y,width,height]
+                const loc = [x,y,width,height]
 
-                let style = this.textSize+"px "+this.font
+                const style = this.textSize+"px "+this.font
                 ctx.font = style
 
                 let txty = parseInt(loc[1]) + (parseInt(loc[3])/2) + parseInt(this.textSize)/2
 
 
-                var textanchor = parseInt(loc[0]) + (parseInt(loc[2])/2)
+                let textanchor = parseInt(loc[0]) + (parseInt(loc[2])/2)
                 ctx.textAlign = "center"
 
                 if(this.align) {
@@ -34,21 +34,21 @@ export default {
                 
                 
                 //added one-line only auto linebreak feature
-                var textarray = [];
-                var temptextarray = this.arrayMaker(mytext)
+                let textarray = [];
+                let temptextarray = this.arrayMaker(mytext)
                 
                 temptextarray.forEach((txtt) => {
 
                 
-                var textwidth = ctx.measureText(txtt).width
+                let textwidth = ctx.measureText(txtt).width
                 if(textwidth <= loc[2]) {
                     textarray.push(txtt)
                 }
                 else {
-                    var temptext = txtt
-                    var linelen = loc[2]
-                    var textlen
-                    var textpixlen
+                    let temptext = txtt
+                    let linelen = loc[2]
+                    let textlen
+                    let textpixlen
 
                     textwidth = ctx.measureText(temptext).width
                     while(textwidth > linelen){
@@ -62,7 +62,7 @@ export default {
                         }
                           //if statement ensures a new line only happens at a space, and not amidst a word
                           if(temptext.substr(textlen,1) != " "){
-                            var backup = textlen;
+                            const backup = textlen;
                             while(temptext.substr(textlen,1) != " " && textlen != 0){
                               textlen--;
                             }

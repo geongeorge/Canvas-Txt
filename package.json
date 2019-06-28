@@ -1,6 +1,6 @@
 {
     "name": "canvas-txt",
-    "version": "1.0.7",
+    "version": "1.0.8",
     "description": "Enables rendering multiline text in HTML5 canvas in a box and auto line breaks",
     "license": "MIT",
     "repository": "geongeorge/Canvas-Txt",

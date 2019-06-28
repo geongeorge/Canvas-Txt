@@ -2,6 +2,8 @@
 
 A library to print multiline text on HTML5 canvas with better line breaks and alignments 🆎
 
+See Demo: [Here](http://canvas-txt.geongeorge.com)
+
 ## Install
 ```
 npm install canvas-txt --save

@@ -1,7 +1,5 @@
 let canvasTxt = window.canvasTxt.default;
 
-console.log(canvasTxt)
-
 var c = document.getElementById("myCanvas");
 var ctx = c.getContext("2d");
 

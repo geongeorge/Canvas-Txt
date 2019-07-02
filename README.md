@@ -1,6 +1,13 @@
-# Canvas Txt 
+<div align="center">
+<h1>Canvas Txt</h1>
+<blockquote>
+The better way to render text on HTML5 Canvas
+</blockquote>
 
-A library to print multiline text on HTML5 canvas with better line breaks and alignments 🆎
+#### A library to print multiline text on HTML5 canvas with better line breaks and alignments 🆎
+</div>
+
+## Demo
 
 See Demo: [Here](http://canvas-txt.geongeorge.com)
 
@@ -9,10 +16,13 @@ See Demo: [Here](http://canvas-txt.geongeorge.com)
 npm install canvas-txt --save
 ```
 
-## Usage
+# Usage
+
 ```html
 <canvas id="myCanvas" width="500" height="500"></canvas>
 ```
+
+## Webpack
 ```javascript
 import canvasTxt from "canvas-txt";
 
@@ -27,6 +37,15 @@ canvasTxt.drawText(ctx,txt,100,200,200,200);
 //canvasTxt.drawText(ctx,txt,x,y,width,height);
 ```
 ![](https://i.imgur.com/qV2x2zV.jpg)
+
+## CDN
+```html
+<script src="unpkg.com/canvas-txt"></script>
+```
+```javascript
+var canvasTxt = window.canvasTxt.default;
+/// remaining same as webpack
+```
 
 ## Properties
 

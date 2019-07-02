@@ -38,6 +38,7 @@ canvasTxt.drawText(ctx,txt,100,200,200,200);
 ```
 
 ## CDN
+See fiddle : <a href="https://jsfiddle.net/geongeorgek/9bamges1/8/">here</a>
 ```html
 <script src="//unpkg.com/canvas-txt"></script>
 ```

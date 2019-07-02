@@ -1,62 +1,67 @@
- <div align="center">
- <img align="center" width="180" src="https://franciscohodge.com/project-pages/js-library-boilerplate/images/JSLB2Basic2.png" />
-  <h2>Javascript Library Boilerplate Basic</h2>
-  <blockquote>Minimal Library Starter Kit for your Javascript projects</blockquote>
-  <a href="https://travis-ci.org/hodgef/js-library-boilerplate-basic"><img src="https://travis-ci.org/hodgef/js-library-boilerplate-basic.svg?branch=master" /></a> <img src="https://img.shields.io/david/hodgef/js-library-boilerplate-basic.svg" /> <a href="https://david-dm.org/hodgef/js-library-boilerplate-basic?type=dev"><img src="https://img.shields.io/david/dev/hodgef/js-library-boilerplate-basic.svg" /></a> <img src="https://api.dependabot.com/badges/status?host=github&repo=hodgef/js-library-boilerplate-basic" />
- 
- #### This is a basic library boilerplate. For a more robust alternative, check out [js-library-boilerplate](https://github.com/hodgef/js-library-boilerplate).
+# Canvas Txt 
 
-</div>
+A library to print multiline text on HTML5 canvas with better line breaks and alignments 🆎
 
-## ⭐️ Features
+See Demo: [Here](http://canvas-txt.geongeorge.com)
 
-- Webpack 4
-- Babel 7
-- UMD exports, so your library works everywhere.
-- Jest unit testing
-- Daily [dependabot](https://dependabot.com) dependency updates
-
-## 📦 Getting Started
-
+## Install
 ```
-git clone https://github.com/hodgef/js-library-boilerplate-basic.git myLibrary
-npm install
+npm install canvas-txt --save
 ```
 
-## 💎 Customization
-
-> Before shipping, make sure to:
-1. Edit `LICENSE` file
-2. Edit `package.json` information (These will be used to generate the headers for your built files)
-3. Edit `library: "MyLibrary"` with your library's export name in `./webpack.config.js`
-
-## 🚀 Deployment
-1. `npm publish`
-2. Your users can include your library as usual
-
-### npm
+## Usage
+```html
+<canvas id="myCanvas" width="500" height="500"></canvas>
 ```
-import MyLibrary from 'my-library';
-let libraryInstance = new MyLibrary();
-...
+```javascript
+import canvasTxt from "canvas-txt";
+
+var c = document.getElementById("myCanvas");
+var ctx = c.getContext("2d");
+
+var txt = "Lorem ipsum dolor sit amet";
+
+canvasTxt.textSize = 24;
+
+canvasTxt.drawText(ctx,txt,100,200,200,200);
+//canvasTxt.drawText(ctx,txt,x,y,width,height);
 ```
+![](https://i.imgur.com/qV2x2zV.jpg)
 
-### self-host/cdn
+## Properties
+
+| Properties| Default  | Description      |
+| :---------: |:------:| :--------------|
+| `debug`      | `false` | Shows the border and align gravity for debugging purposes |
+| `align`      | `center`      |  Text align. Other possible values: `left`, `right` |
+| `textSize` | `14`      |    Font size of the text in px  |
+| `font` | `Arial`      |    Font family of the text  |
+| `lineHeight` | `null`      |   Line height of the text, if set to null it tries to  auto-detect the value  |
+
+## Methods
+| Method| Description      |
+| :--------- | :--------------|
+| `drawText(ctx,text,x,y,width,height)`      | To draw the text to the canvas |
+
+## Example
+
+```javascript
+import canvasTxt from "canvas-txt";
+
+var c = document.getElementById("myCanvas");
+var ctx = c.getContext("2d");
+
+//You can use \n to define custom line breaks
+var txt = "Lorem \nipsum dolor sit amet";
+
+//You can also use other methods alongside this
+ctx.fillStyle = "#ff0000"; //red color text
+
+canvasTxt.font = "Verdana";
+canvasTxt.textSize = 20;
+canvasTxt.align = "left";
+canvasTxt.lineHeight = 60;
+canvasTxt.debug = true; //shows debug info
+canvasTxt.drawText(ctx,txt,100,200,200,200)
+
 ```
-<script src="build/index.js"></script>
-
-let MyLibrary = window.MyLibrary.default;
-let libraryInstance = new MyLibrary();
-...
-```
-
-> **Note:** In this minimal version, any images and css files you import will be added to the js bundle. If you want them as separate files, you can use [js-library-boilerplate](https://github.com/hodgef/js-library-boilerplate) or edit the Webpack config accordingly.
-
-## ✅ Libraries built with this boilerplate
-
-> Made a library using this starter kit? Share it here by [submitting a pull request](https://github.com/hodgef/js-library-boilerplate-basic/pulls)!
-
-- [simple-keyboard-autocorrect](https://github.com/hodgef/simple-keyboard-autocorrect) - Autocorrect module for simple-keyboard
-- [simple-keyboard-input-mask](https://github.com/hodgef/simple-keyboard-input-mask) - Input mask module for simple-keyboard
-- [simple-keyboard-key-navigation](https://github.com/hodgef/simple-keyboard-key-navigation) - Key navigation module for simple-keyboard
-- [swipe-keyboard](https://github.com/hodgef/swipe-keyboard) - Swype type keyboard module for simple-keyboard

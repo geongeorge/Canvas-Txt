@@ -36,7 +36,6 @@ canvasTxt.textSize = 24;
 canvasTxt.drawText(ctx,txt,100,200,200,200);
 //canvasTxt.drawText(ctx,txt,x,y,width,height);
 ```
-![](https://i.imgur.com/qV2x2zV.jpg)
 
 ## CDN
 ```html
@@ -44,8 +43,10 @@ canvasTxt.drawText(ctx,txt,100,200,200,200);
 ```
 ```javascript
 var canvasTxt = window.canvasTxt.default;
-/// remaining same as webpack
+/// ...remaining same as webpack
 ```
+
+![](https://i.imgur.com/qV2x2zV.jpg)
 
 ## Properties
 

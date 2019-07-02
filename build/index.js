@@ -1,6 +1,6 @@
 /*!
  * 
- *   canvas-txt v1.1.0
+ *   canvas-txt v1.1.1
  *   https://github.com/geongeorge/Canvas-Txt
  * 
  *   Copyright (c) Geon George (https://geongeorge.com)

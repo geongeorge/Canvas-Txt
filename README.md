@@ -40,7 +40,7 @@ canvasTxt.drawText(ctx,txt,100,200,200,200);
 
 ## CDN
 ```html
-<script src="unpkg.com/canvas-txt"></script>
+<script src="//unpkg.com/canvas-txt"></script>
 ```
 ```javascript
 var canvasTxt = window.canvasTxt.default;

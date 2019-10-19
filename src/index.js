@@ -90,6 +90,7 @@ var canvasTxt = {
       ctx.strokeRect(loc[0], loc[1], loc[2], loc[3]);
       ctx.lineWidth = 3;
       ctx.strokeStyle = "red";
+      ctx.beginPath();
       ctx.moveTo(textanchor, loc[1]);
       ctx.lineTo(textanchor, parseInt(loc[1]) + parseInt(loc[3]));
       ctx.stroke();

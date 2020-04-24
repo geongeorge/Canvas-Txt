@@ -17,12 +17,14 @@ Better way to render text on the HTML5 Canvas
 
 #### A Miniscule library to render text on HTML5 Canvas with ZERO dependencies 🆎
 
+</div>
+
+## Features
+
 - [x] Auto line breaks
 - [x] Horizontal Align
 - [x] Vertical Align
 - [x] Easy Debugging
-
-</div>
 
 ## Demo
 
@@ -32,6 +34,10 @@ See Demo: [Here](http://canvas-txt.geongeorge.com)
 
 ```
 npm install canvas-txt --save
+
+or
+
+yarn add canvas-txt
 ```
 
 # Usage

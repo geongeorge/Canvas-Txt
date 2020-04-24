@@ -1,5 +1,5 @@
 <div align="center">
-<img src="https://i.imgur.com/qV2x2zV.jpg" width=80>
+<img src="https://i.imgur.com/qV2x2zV.jpg" width=120>
 <h1>Canvas Txt</h1>
 <blockquote>
 Better way to render text on the HTML5 Canvas

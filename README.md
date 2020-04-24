@@ -1,5 +1,5 @@
 <div align="center">
-<h1>Canvas Txt</h1>
+<h1>Canvas Txt 📐✍</h1>
 <blockquote>
 Better way to render text on the HTML5 Canvas
 </blockquote>

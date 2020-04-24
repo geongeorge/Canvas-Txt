@@ -7,11 +7,11 @@ Better way to render text on the HTML5 Canvas
 
 <p align="center">
 
-![NPM](https://img.shields.io/bundlephobia/minzip/canvas-txt?style=flat-square)
+<img alt="NPM" src="https://img.shields.io/bundlephobia/minzip/canvas-txt?style=flat-square">
 
-![NPM](https://img.shields.io/npm/v/canvas-txt?style=flat-square)
+<img alt="NPM" src="https://img.shields.io/npm/v/canvas-txt?style=flat-square">
 
-![NPM](https://img.shields.io/npm/l/canvas-txt?style=flat-square)
+<img alt="NPM" src="https://img.shields.io/npm/l/canvas-txt?style=flat-square">
 
 </p>
 

@@ -1,5 +1,4 @@
 <div align="center">
-<img src="https://i.imgur.com/qV2x2zV.jpg" width=120>
 <h1>Canvas Txt</h1>
 <blockquote>
 Better way to render text on the HTML5 Canvas
@@ -17,10 +16,13 @@ Better way to render text on the HTML5 Canvas
 
 #### A Miniscule library to render text on HTML5 Canvas with ZERO dependencies 🆎
 
+<img src="https://i.imgur.com/JWAC6GS.png" width=300>
+
 </div>
 
 ## Features
 
+- [x] Multiline text
 - [x] Auto line breaks
 - [x] Horizontal Align
 - [x] Vertical Align

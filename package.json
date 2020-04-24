@@ -5,6 +5,7 @@
   "main": "build/index.js",
   "scripts": {
     "build": "webpack",
+    "start": "webpack --watch",
     "test": "jest",
     "prepare": "npm run build"
   },

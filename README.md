@@ -29,7 +29,7 @@ Better way to render text on the HTML5 Canvas
 
 ## Demo
 
-See Demo: [Here](http://canvas-txt.geongeorge.com)
+See Demo: [Here](http://canvas-txt.netlify.com/)
 
 ## Install
 

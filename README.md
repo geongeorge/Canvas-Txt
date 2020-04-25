@@ -1,5 +1,6 @@
 <div align="center">
-<h1>Canvas Txt 📐✍</h1>
+<img src="https://i.imgur.com/Te6TkKz.png" width=400 alt="canvas txt">
+<h3>Canvas Txt 📐✍</h3>
 <blockquote>
 Better way to render text on the HTML5 Canvas
 </blockquote>
@@ -15,8 +16,6 @@ Better way to render text on the HTML5 Canvas
 </p>
 
 #### A Miniscule library to render text on HTML5 Canvas with ZERO dependencies 🆎
-
-<img src="https://i.imgur.com/JWAC6GS.png" width=300>
 
 </div>
 

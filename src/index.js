@@ -9,6 +9,11 @@ var canvasTxt = {
     // Parse all to integers
     ;[x, y, width, height] = [x, y, width, height].map(el => parseInt(el))
 
+    if (width <= 0 || height <= 0) {
+      //width or height cannot be zero
+      return
+    }
+
     // End points
     const xEnd = x + width
     const yEnd = y + height

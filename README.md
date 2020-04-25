@@ -69,7 +69,7 @@ canvasTxt.drawText(ctx, txt, 100, 200, 200, 200)
 See fiddle : <a href="https://jsfiddle.net/geongeorgek/9bamges1/10/">here</a>
 
 ```html
-<script src="https://unpkg.com/canvas-txt"></script>
+<script src="//unpkg.com/canvas-txt"></script>
 ```
 
 ```javascript

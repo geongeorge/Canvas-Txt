@@ -9,6 +9,6 @@ var txt =
 canvasTxt.fontSize = 24
 // canvasTxt.debug = true
 canvasTxt.align = 'center'
-canvasTxt.verticalAlign = 'middle'
+canvasTxt.vAlign = 'middle'
 
 canvasTxt.drawText(ctx, txt, 120, 120, 250, 200)

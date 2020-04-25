@@ -1,7 +1,7 @@
 var canvasTxt = {
   debug: false,
   align: 'center',
-  verticalAlign: 'middle',
+  vAlign: 'middle',
   fontSize: 14,
   font: 'Arial',
   lineHeight: null,
@@ -98,9 +98,9 @@ var canvasTxt = {
 
     let debugY = y
     // Vertical Align
-    if (this.verticalAlign === 'top') {
+    if (this.vAlign === 'top') {
       txtY = y + this.fontSize
-    } else if (this.verticalAlign === 'bottom') {
+    } else if (this.vAlign === 'bottom') {
       txtY = yEnd - vheight
       debugY = yEnd
     } else {

@@ -1,6 +1,6 @@
 {
   "name": "canvas-txt",
-  "version": "2.0.6",
+  "version": "2.0.7",
   "description": "Render multiline textboxes in HTML5 canvas with auto line breaks and better alignment system",
   "main": "build/index.js",
   "scripts": {

@@ -80,17 +80,17 @@ var canvasTxt = window.canvasTxt.default
 
 ## Properties
 
-|  Properties   | Default  | Description                                                               |
-| :-----------: | :------: | :------------------------------------------------------------------------ |
-|    `debug`    | `false`  | Shows the border and align gravity for debugging purposes                 |
-|    `align`    | `center` | Text align. Other possible values: `left`, `right`                        |
-|   `vAlign`    | `middle` | Text vertical align. Other possible values: `top`, `bottom`               |
-|  `fontSize`   |   `14`   | Font size of the text in px                                               |
-|    `font`     | `Arial`  | Font family of the text                                                   |
-|  `fontStyle`  |   `''`   | Font style, for italic font for example, same as css font-style           |
-| `fontVariant` |   `''`   | Font variant, for small-caps font for example, same as css font-variant   |
-| `fontWeight`  |   `''`   | Font weight, for bold font for example, same as css font-weight           |
-| `lineHeight`  |  `null`  | Line height of the text, if set to null it tries to auto-detect the value |
+|  Properties   | Default  | Description                                                                    |
+| :-----------: | :------: | :----------------------------------------------------------------------------- |
+|    `debug`    | `false`  | Shows the border and align gravity for debugging purposes                      |
+|    `align`    | `center` | Text align. Other possible values: `left`, `right`                             |
+|   `vAlign`    | `middle` | Text vertical align. Other possible values: `top`, `bottom`                    |
+|  `fontSize`   |   `14`   | Font size of the text in px                                                    |
+|    `font`     | `Arial`  | Font family of the text                                                        |
+|  `fontStyle`  |   `''`   | Font style, same as css font-style. Examples: `italic`, `oblique 40deg`        |
+| `fontVariant` |   `''`   | Font variant, same as css font-variant. Examples: `small-caps`, `slashed-zero` |
+| `fontWeight`  |   `''`   | Font weight, same as css font-weight. Examples: `bold`, `100`                  |
+| `lineHeight`  |  `null`  | Line height of the text, if set to null it tries to auto-detect the value      |
 
 ## Methods
 

@@ -3,6 +3,9 @@ var canvasTxt = {
   align: 'center',
   vAlign: 'middle',
   fontSize: 14,
+  fontWeight: '',
+  fontStyle: '',
+  fontVariant: '',
   font: 'Arial',
   lineHeight: null,
   drawText: function(ctx, mytext, x, y, width, height) {
@@ -26,7 +29,8 @@ var canvasTxt = {
       )
     }
 
-    const style = this.fontSize + 'px ' + this.font
+    const { fontStyle, fontVariant, fontWeight, fontSize, font } = this
+    const style = `${fontStyle} ${fontVariant} ${fontWeight} ${fontSize}px ${font}`
     ctx.font = style
 
     let txtY = y + height / 2 + parseInt(this.fontSize) / 2

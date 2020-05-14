@@ -76,11 +76,6 @@ var canvasTxt = window.canvasTxt.default
 /// ...remaining same as webpack
 ```
 
-## React wrapper
-
-A react wrapper of this library is available for react. Check [neomusic/react-canvas-txt](https://github.com/neomusic/react-canvas-txt)
-
-
 ![](https://i.imgur.com/qV2x2zV.jpg)
 
 ## Properties
@@ -124,3 +119,7 @@ canvasTxt.lineHeight = 60
 canvasTxt.debug = true //shows debug info
 canvasTxt.drawText(ctx, txt, 100, 200, 200, 200)
 ```
+
+## React wrapper
+
+A wrapper of this library is available for react. Check [neomusic/react-canvas-txt](https://github.com/neomusic/react-canvas-txt)

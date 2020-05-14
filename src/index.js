@@ -138,6 +138,10 @@ var canvasTxt = {
       ctx.lineTo(xEnd, debugY)
       ctx.stroke()
     }
+
+    const TEXT_HEIGHT = vheight + charHeight
+
+    return { height: TEXT_HEIGHT }
   },
   // Calculate Height of the font
   getTextHeight: function(txt, font, size) {

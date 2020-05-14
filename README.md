@@ -119,3 +119,7 @@ canvasTxt.lineHeight = 60
 canvasTxt.debug = true //shows debug info
 canvasTxt.drawText(ctx, txt, 100, 200, 200, 200)
 ```
+
+## React wrapper
+
+A wrapper of this library is available for react. Check [neomusic/react-canvas-txt](https://github.com/neomusic/react-canvas-txt)

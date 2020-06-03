@@ -114,6 +114,7 @@ var canvasTxt = {
     }
     //print all lines of text
     textarray.forEach(txtline => {
+      txtline = txtline.trim()
       ctx.fillText(txtline, textanchor, txtY)
       txtY += charHeight
     })

@@ -91,6 +91,7 @@ var canvasTxt = window.canvasTxt.default
 | `fontVariant` |   `''`   | Font variant, same as css font-variant. Examples: `small-caps`, `slashed-zero` |
 | `fontWeight`  |   `''`   | Font weight, same as css font-weight. Examples: `bold`, `100`                  |
 | `lineHeight`  |  `null`  | Line height of the text, if set to null it tries to auto-detect the value      |
+|   `justify`   | `false`  | Justify text if `true`, it will insert spaces between words when necessary.    |
 
 ## Methods
 
@@ -117,6 +118,7 @@ canvasTxt.fontSize = 20
 canvasTxt.align = 'left'
 canvasTxt.lineHeight = 60
 canvasTxt.debug = true //shows debug info
+canvasTxt.justify = false
 canvasTxt.drawText(ctx, txt, 100, 200, 200, 200)
 ```
 

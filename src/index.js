@@ -1,3 +1,6 @@
+// Hair space character for precise justification
+const SPACE = '\u200a'
+
 var canvasTxt = {
   debug: false,
   align: 'center',
@@ -8,6 +11,16 @@ var canvasTxt = {
   fontVariant: '',
   font: 'Arial',
   lineHeight: null,
+  justify: false,
+  /**
+   *
+   * @param {CanvasRenderingContext2D} ctx
+   * @param {string} mytext
+   * @param {number} x
+   * @param {number} y
+   * @param {number} width
+   * @param {number} height
+   */
   drawText: function(ctx, mytext, x, y, width, height) {
     // Parse all to integers
     ;[x, y, width, height] = [x, y, width, height].map(el => parseInt(el))
@@ -52,6 +65,8 @@ var canvasTxt = {
     let textarray = []
     let temptextarray = mytext.split('\n')
 
+    const spaceWidth = this.justify ? ctx.measureText(SPACE).width : 0
+
     temptextarray.forEach(txtt => {
       let textwidth = ctx.measureText(txtt).width
       if (textwidth <= width) {
@@ -83,6 +98,10 @@ var canvasTxt = {
             }
             texttoprint = temptext.substr(0, textlen)
           }
+
+          texttoprint = this.justify
+            ? this.justifyLine(ctx, texttoprint, spaceWidth, SPACE, width)
+            : texttoprint
 
           temptext = temptext.substr(textlen)
           textwidth = ctx.measureText(temptext).width
@@ -161,6 +180,48 @@ var canvasTxt = {
     document.body.removeChild(el)
 
     return height
+  },
+  /**
+   * This function will insert spaces between words in a line in order
+   * to raise the line width to the box width.
+   * The spaces are evenly spread in the line, and extra spaces (if any) are inserted
+   * between the first words.
+   *
+   * It returns the justified text.
+   *
+   * @param {CanvasRenderingContext2D} ctx
+   * @param {string} line
+   * @param {number} spaceWidth
+   * @param {string} spaceChar
+   * @param {number} width
+   */
+  justifyLine: function(ctx, line, spaceWidth, spaceChar, width) {
+    const text = line.trim()
+
+    const lineWidth = ctx.measureText(text).width
+
+    const nbSpaces = text.split(/\s+/).length - 1
+    const nbSpacesToInsert = Math.floor((width - lineWidth) / spaceWidth)
+
+    if (nbSpaces <= 0 || nbSpacesToInsert <= 0) return text
+
+    // We insert at least nbSpacesMinimum and we add extraSpaces to the first words
+    const nbSpacesMinimum = Math.floor(nbSpacesToInsert / nbSpaces)
+    let extraSpaces = nbSpacesToInsert - nbSpaces * nbSpacesMinimum
+
+    let spaces = []
+    for (let i = 0; i < nbSpacesMinimum; i++) {
+      spaces.push(spaceChar)
+    }
+    spaces = spaces.join('')
+
+    const justifiedText = text.replace(/\s+/g, match => {
+      const allSpaces = extraSpaces > 0 ? spaces + spaceChar : spaces
+      extraSpaces--
+      return match + allSpaces
+    })
+
+    return justifiedText
   }
 }
 

@@ -87,6 +87,9 @@ var canvasTxt = {
             texttoprint = temptext.substr(0, textlen)
             textpixlen = ctx.measureText(temptext.substr(0, textlen)).width
           }
+          // Remove last character that was out of the box
+          textlen--
+          texttoprint = texttoprint.substr(0, textlen)
           //if statement ensures a new line only happens at a space, and not amidst a word
           const backup = textlen
           if (temptext.substr(textlen, 1) != ' ') {

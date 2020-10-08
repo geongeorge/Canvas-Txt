@@ -29,7 +29,8 @@ module.exports = {
     path: path.resolve(__dirname, 'build'),
     library: 'canvasTxt',
     libraryTarget: 'umd',
-    umdNamedDefine: true
+    umdNamedDefine: true,
+    globalObject: 'typeof self !== \'undefined\' ? self : this'
   },
   module: {
     rules: [

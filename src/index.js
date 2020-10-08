@@ -1,7 +1,7 @@
 // Hair space character for precise justification
 const SPACE = '\u200a'
 
-var canvasTxt = {
+const canvasTxt = {
   debug: false,
   align: 'center',
   vAlign: 'middle',
@@ -118,7 +118,7 @@ var canvasTxt = {
     })
     const charHeight = this.lineHeight
       ? this.lineHeight
-      : this.getTextHeight(mytext, this.font, this.fontSize) //close approximation of height with width
+      : this.getTextHeight(ctx, mytext, style) //close approximation of height with width
     const vheight = charHeight * (textarray.length - 1)
     const negoffset = vheight / 2
 
@@ -167,20 +167,17 @@ var canvasTxt = {
     return { height: TEXT_HEIGHT }
   },
   // Calculate Height of the font
-  getTextHeight: function(txt, font, size) {
-    const el = document.createElement('div')
+  getTextHeight: function(ctx, text, style) {
+    const previousTextBaseline = ctx.textBaseline
+    const previousFont = ctx.font
 
-    el.style.cssText =
-      'position:fixed;padding:0;left:-9999px;top:-9999px;font:' +
-      font +
-      ';font-size:' +
-      size +
-      'px'
-    el.textContent = txt
+    ctx.textBaseline = 'bottom'
+    ctx.font = style
+    const { actualBoundingBoxAscent: height } = ctx.measureText(text)
 
-    document.body.appendChild(el)
-    const height = parseInt(getComputedStyle(el).getPropertyValue('height'), 10)
-    document.body.removeChild(el)
+    // Reset baseline
+    ctx.textBaseline = previousTextBaseline
+    ctx.font = previousFont
 
     return height
   },

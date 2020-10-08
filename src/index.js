@@ -1,7 +1,7 @@
 // Hair space character for precise justification
 const SPACE = '\u200a'
 
-var canvasTxt = {
+const canvasTxt = {
   debug: false,
   align: 'center',
   vAlign: 'middle',

@@ -1,9 +1,11 @@
 {
   "name": "canvas-txt",
-  "version": "3.0.0-beta.2",
+  "version": "3.0.0-beta.3",
   "description": "Render multiline textboxes in HTML5 canvas with auto line breaks and better alignment system",
   "main": "build/index.js",
-  "files": ["build"],
+  "files": [
+    "build"
+  ],
   "scripts": {
     "build": "webpack",
     "start": "webpack-dev-server --content-base public",

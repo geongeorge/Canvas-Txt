@@ -52,15 +52,33 @@ yarn add canvas-txt
 ```javascript
 import canvasTxt from 'canvas-txt'
 
-var c = document.getElementById('myCanvas')
-var ctx = c.getContext('2d')
+const c = document.getElementById('myCanvas')
+const ctx = c.getContext('2d')
 
-var txt = 'Lorem ipsum dolor sit amet'
+const txt = 'Lorem ipsum dolor sit amet'
 
 canvasTxt.fontSize = 24
 
 canvasTxt.drawText(ctx, txt, 100, 200, 200, 200)
 //canvasTxt.drawText(ctx,txt,x,y,width,height);
+```
+
+## Node canvas
+
+See [nodejs demo](https://github.com/geongeorge/canvas-txt-node-canvas-demo)
+
+```js
+const { createCanvas } = require('canvas')
+
+const canvasTxt = require('canvas-txt').default
+
+const canvas = createCanvas(400, 400)
+const ctx = canvas.getContext('2d')
+
+ctx.fillStyle = 'black'
+const txt = 'Lorem ipsum dolor sit amet'
+
+canvasTxt.drawText(ctx, txt, 50, 50, 200, 200)
 ```
 
 ## CDN
@@ -104,11 +122,11 @@ var canvasTxt = window.canvasTxt.default
 ```javascript
 import canvasTxt from 'canvas-txt'
 
-var c = document.getElementById('myCanvas')
-var ctx = c.getContext('2d')
+const c = document.getElementById('myCanvas')
+const ctx = c.getContext('2d')
 
 //You can use \n to define custom line breaks
-var txt = 'Lorem \nipsum dolor sit amet'
+const txt = 'Lorem \nipsum dolor sit amet'
 
 //You can also use other methods alongside this
 ctx.fillStyle = '#ff0000' //red color text

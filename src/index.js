@@ -106,7 +106,7 @@ const canvasTxt = {
             ? this.justifyLine(ctx, texttoprint, spaceWidth, SPACE, width)
             : texttoprint
 
-          temptext = temptext.substr(textlen)
+          temptext = temptext.substr(textlen).trim()
           textwidth = ctx.measureText(temptext).width
           textarray.push(texttoprint)
         }

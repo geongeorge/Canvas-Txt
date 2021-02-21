@@ -27,6 +27,7 @@ const canvasTxt = {
 
     if (width <= 0 || height <= 0 || this.fontSize <= 0) {
       //width or height or font size cannot be 0
+      if (this.debug) console.warn('width or height or font size cannot be 0')
       return
     }
 
@@ -77,7 +78,6 @@ const canvasTxt = {
         let textlen
         let textpixlen
         let texttoprint
-        textwidth = ctx.measureText(temptext).width
         while (textwidth > linelen) {
           textlen = 0
           textpixlen = 0
@@ -85,10 +85,16 @@ const canvasTxt = {
           while (textpixlen < linelen) {
             textlen++
             texttoprint = temptext.substr(0, textlen)
-            textpixlen = ctx.measureText(temptext.substr(0, textlen)).width
+            textpixlen = ctx.measureText(texttoprint).width
           }
           // Remove last character that was out of the box
           textlen--
+          if (textlen == 0) {
+            // if width of a character is less then linelen
+            if (this.debug)
+              console.error('Width cannot be less than width of a character')
+            return
+          }
           texttoprint = texttoprint.substr(0, textlen)
           //if statement ensures a new line only happens at a space, and not amidst a word
           const backup = textlen
@@ -99,7 +105,7 @@ const canvasTxt = {
             if (textlen == 0) {
               textlen = backup
             }
-            texttoprint = temptext.substr(0, textlen)
+            texttoprint = temptext.substr(0, textlen).trim()
           }
 
           texttoprint = this.justify
@@ -116,6 +122,9 @@ const canvasTxt = {
       }
       // end foreach temptextarray
     })
+
+    textarray = textarray.filter(txtt => txtt != ' ')
+
     const charHeight = this.lineHeight
       ? this.lineHeight
       : this.getTextHeight(ctx, mytext, style) //close approximation of height with width

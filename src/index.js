@@ -5,6 +5,7 @@ const canvasTxt = {
   debug: false,
   align: 'center',
   vAlign: 'middle',
+  yLimit: null, // can be top or bottom, so thet text does not move beyond top or bottom irrespective of alignment
   fontSize: 14,
   fontWeight: '',
   fontStyle: '',
@@ -125,14 +126,26 @@ const canvasTxt = {
 
     const charHeight = this.lineHeight ? this.lineHeight : this.fontSize //close approximation of height with width
     const vheight = charHeight * (textarray.length - 1)
+    const TEXT_HEIGHT = vheight + charHeight
 
     let txtY
     let debugY = y
+    let computedVerticalAlignment
+
+    if (TEXT_HEIGHT > height && this.yLimit) {
+      if (this.yLimit == 'bottom') {
+        computedVerticalAlignment = 'bottom'
+      } else {
+        computedVerticalAlignment = 'top'
+      }
+    } else {
+      computedVerticalAlignment = this.vAlign
+    }
 
     // Vertical Align
-    if (this.vAlign === 'top') {
+    if (computedVerticalAlignment === 'top') {
       txtY = y + this.fontSize
-    } else if (this.vAlign === 'bottom') {
+    } else if (computedVerticalAlignment === 'bottom') {
       txtY = yEnd - vheight
       debugY = yEnd
     } else {
@@ -179,8 +192,6 @@ const canvasTxt = {
       ctx.stroke()
     }
 
-    const TEXT_HEIGHT = vheight + charHeight
-
     return { height: TEXT_HEIGHT }
   },
   // Calculate Height of the font
@@ -198,6 +209,7 @@ const canvasTxt = {
 
     return height
   },
+
   /**
    * This function will insert spaces between words in a line in order
    * to raise the line width to the box width.

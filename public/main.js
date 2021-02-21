@@ -4,11 +4,12 @@ var c = document.getElementById('myCanvas')
 var ctx = c.getContext('2d')
 
 var txt =
-  'Lorem ipsum Lorem ipsum Lorem ipsum'
+  'Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum'
 
 canvasTxt.fontSize = 40
 canvasTxt.fontWeight = '100'
 canvasTxt.fontStyle = 'oblique'
+canvasTxt.yLimit = 'top'
 // canvasTxt.fontVariant = 'small-caps'
 canvasTxt.debug = true
 canvasTxt.align = 'center'

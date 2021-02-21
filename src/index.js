@@ -47,8 +47,6 @@ const canvasTxt = {
     const style = `${fontStyle} ${fontVariant} ${fontWeight} ${fontSize}px ${font}`
     ctx.font = style
 
-    let txtY = y + height / 2 + parseInt(this.fontSize) / 2
-
     let textanchor
 
     if (this.align === 'right') {
@@ -123,15 +121,14 @@ const canvasTxt = {
       // end foreach temptextarray
     })
 
-    textarray = textarray.filter(txtt => txtt != ' ')
+    textarray = textarray.filter(txtline => txtline != ' ')
 
-    const charHeight = this.lineHeight
-      ? this.lineHeight
-      : this.getTextHeight(ctx, mytext, style) //close approximation of height with width
+    const charHeight = this.lineHeight ? this.lineHeight : this.fontSize //close approximation of height with width
     const vheight = charHeight * (textarray.length - 1)
-    const negoffset = vheight / 2
 
+    let txtY
     let debugY = y
+
     // Vertical Align
     if (this.vAlign === 'top') {
       txtY = y + this.fontSize
@@ -141,11 +138,22 @@ const canvasTxt = {
     } else {
       //defaults to center
       debugY = y + height / 2
-      txtY -= negoffset
+      if (textarray.length % 2 == 0) {
+        // even no. of lines
+        txtY = y + height / 2 - (textarray.length / 2 - 1) * charHeight
+      } else {
+        // odd no. of lines
+        txtY =
+          y +
+          height / 2 +
+          parseInt(this.fontSize) / 2 -
+          Math.floor(textarray.length / 2) * charHeight
+        console.log('fontSize = ', this.fontSize, 'char height = ', charHeight)
+      }
     }
+    ctx.textBaseline = 'bottom'
     //print all lines of text
     textarray.forEach(txtline => {
-      txtline = txtline.trim()
       ctx.fillText(txtline, textanchor, txtY)
       txtY += charHeight
     })

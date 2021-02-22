@@ -5,6 +5,7 @@ const canvasTxt = {
   debug: false,
   align: 'center',
   vAlign: 'middle',
+  yLimit: null, // can be top or bottom, so thet text does not move beyond top or bottom irrespective of alignment
   fontSize: 14,
   fontWeight: '',
   fontStyle: '',
@@ -12,6 +13,7 @@ const canvasTxt = {
   font: 'Arial',
   lineHeight: null,
   justify: false,
+  underline: false,
   /**
    *
    * @param {CanvasRenderingContext2D} ctx
@@ -27,6 +29,7 @@ const canvasTxt = {
 
     if (width <= 0 || height <= 0 || this.fontSize <= 0) {
       //width or height or font size cannot be 0
+      if (this.debug) console.warn('width or height or font size cannot be 0')
       return
     }
 
@@ -45,8 +48,6 @@ const canvasTxt = {
     const { fontStyle, fontVariant, fontWeight, fontSize, font } = this
     const style = `${fontStyle} ${fontVariant} ${fontWeight} ${fontSize}px ${font}`
     ctx.font = style
-
-    let txtY = y + height / 2 + parseInt(this.fontSize) / 2
 
     let textanchor
 
@@ -68,16 +69,15 @@ const canvasTxt = {
     const spaceWidth = this.justify ? ctx.measureText(SPACE).width : 0
 
     temptextarray.forEach(txtt => {
-      let textwidth = ctx.measureText(txtt).width
+      let textwidth = ctx.measureText(txtt.trim()).width
       if (textwidth <= width) {
-        textarray.push(txtt)
+        textarray.push({ text: txtt.trim(), width: textwidth })
       } else {
         let temptext = txtt
         let linelen = width
         let textlen
         let textpixlen
         let texttoprint
-        textwidth = ctx.measureText(temptext).width
         while (textwidth > linelen) {
           textlen = 0
           textpixlen = 0
@@ -85,10 +85,16 @@ const canvasTxt = {
           while (textpixlen < linelen) {
             textlen++
             texttoprint = temptext.substr(0, textlen)
-            textpixlen = ctx.measureText(temptext.substr(0, textlen)).width
+            textpixlen = ctx.measureText(texttoprint).width
           }
           // Remove last character that was out of the box
           textlen--
+          if (textlen == 0) {
+            // if width of a character is less then linelen
+            if (this.debug)
+              console.error('Width cannot be less than width of a character')
+            return
+          }
           texttoprint = texttoprint.substr(0, textlen)
           //if statement ensures a new line only happens at a space, and not amidst a word
           const backup = textlen
@@ -99,7 +105,7 @@ const canvasTxt = {
             if (textlen == 0) {
               textlen = backup
             }
-            texttoprint = temptext.substr(0, textlen)
+            texttoprint = temptext.substr(0, textlen).trim()
           }
 
           texttoprint = this.justify
@@ -108,38 +114,84 @@ const canvasTxt = {
 
           temptext = temptext.substr(textlen)
           textwidth = ctx.measureText(temptext).width
-          textarray.push(texttoprint)
+          textarray.push({
+            text: texttoprint,
+            width: ctx.measureText(texttoprint).width
+          })
         }
         if (textwidth > 0) {
-          textarray.push(temptext)
+          textarray.push({ text: temptext, width: textwidth })
         }
       }
       // end foreach temptextarray
     })
-    const charHeight = this.lineHeight
-      ? this.lineHeight
-      : this.getTextHeight(ctx, mytext, style) //close approximation of height with width
-    const vheight = charHeight * (textarray.length - 1)
-    const negoffset = vheight / 2
 
+    textarray = textarray.filter(txtline => txtline.text != ' ')
+
+    const charHeight = this.lineHeight ? this.lineHeight : this.fontSize //close approximation of height with width
+    const vheight = charHeight * (textarray.length - 1)
+    const TEXT_HEIGHT = vheight + charHeight
+
+    let txtY
     let debugY = y
+    let computedVerticalAlignment
+
+    if (TEXT_HEIGHT > height && this.yLimit) {
+      if (this.yLimit == 'bottom') {
+        computedVerticalAlignment = 'bottom'
+      } else {
+        computedVerticalAlignment = 'top'
+      }
+    } else {
+      computedVerticalAlignment = this.vAlign
+    }
+
     // Vertical Align
-    if (this.vAlign === 'top') {
+    if (computedVerticalAlignment === 'top') {
       txtY = y + this.fontSize
-    } else if (this.vAlign === 'bottom') {
+    } else if (computedVerticalAlignment === 'bottom') {
       txtY = yEnd - vheight
       debugY = yEnd
     } else {
       //defaults to center
       debugY = y + height / 2
-      txtY -= negoffset
+      if (textarray.length % 2 == 0) {
+        // even no. of lines
+        txtY = y + height / 2 - (textarray.length / 2 - 1) * charHeight
+      } else {
+        // odd no. of lines
+        txtY =
+          y +
+          height / 2 +
+          parseInt(this.fontSize) / 2 -
+          Math.floor(textarray.length / 2) * charHeight
+      }
     }
+
+    ctx.textBaseline = 'bottom'
+    const offset = this.getBaseLineOffset(ctx, 'abbcdefgyABCDGI', style)
+    ctx.lineWidth = '2'
     //print all lines of text
+    ctx.beginPath()
     textarray.forEach(txtline => {
-      txtline = txtline.trim()
-      ctx.fillText(txtline, textanchor, txtY)
+      ctx.fillText(txtline.text, textanchor, txtY)
+
+      const underlineY = txtY - offset + 2
+      if (this.underline) {
+        if (this.align == 'left') {
+          ctx.moveTo(textanchor, underlineY)
+          ctx.lineTo(textanchor + txtline.width, underlineY)
+        } else if (this.align == 'right') {
+          ctx.moveTo(textanchor, underlineY)
+          ctx.lineTo(textanchor - txtline.width, underlineY)
+        } else if (this.align == 'center') {
+          ctx.moveTo(textanchor - txtline.width / 2, underlineY)
+          ctx.lineTo(textanchor + txtline.width / 2, underlineY)
+        }
+      }
       txtY += charHeight
     })
+    ctx.stroke()
 
     if (this.debug) {
       // Text box
@@ -162,8 +214,6 @@ const canvasTxt = {
       ctx.stroke()
     }
 
-    const TEXT_HEIGHT = vheight + charHeight
-
     return { height: TEXT_HEIGHT }
   },
   // Calculate Height of the font
@@ -181,6 +231,21 @@ const canvasTxt = {
 
     return height
   },
+
+  getBaseLineOffset: function(ctx, text, style) {
+    const previousTextBaseline = ctx.textBaseline
+    const previousFont = ctx.font
+
+    ctx.font = style
+    ctx.textBaseline = 'alphabetic'
+    const { fontBoundingBoxDescent: offset } = ctx.measureText(text)
+
+    // Reset baseline
+    ctx.textBaseline = previousTextBaseline
+    ctx.font = previousFont
+    return offset
+  },
+
   /**
    * This function will insert spaces between words in a line in order
    * to raise the line width to the box width.

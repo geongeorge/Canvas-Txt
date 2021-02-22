@@ -13,6 +13,7 @@ canvasTxt.fontVariant = 'small-caps'
 // canvasTxt.debug = true
 canvasTxt.align = 'center'
 canvasTxt.vAlign = 'middle'
+// canvasTxt.underline = true
 // canvasTxt.justify = true
 
 let { height } = canvasTxt.drawText(ctx, txt, 120, 120, 250, 200)

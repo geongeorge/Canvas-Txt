@@ -172,6 +172,7 @@ const canvasTxt = {
     const offset = this.getBaseLineOffset(ctx, 'abbcdefgyABCDGI', style)
     ctx.lineWidth = '2'
     //print all lines of text
+    ctx.beginPath()
     textarray.forEach(txtline => {
       ctx.fillText(txtline.text, textanchor, txtY)
 
@@ -187,10 +188,10 @@ const canvasTxt = {
           ctx.moveTo(textanchor - txtline.width / 2, underlineY)
           ctx.lineTo(textanchor + txtline.width / 2, underlineY)
         }
-        ctx.stroke()
       }
       txtY += charHeight
     })
+    ctx.stroke()
 
     if (this.debug) {
       // Text box

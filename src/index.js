@@ -13,6 +13,7 @@ const canvasTxt = {
   font: 'Arial',
   lineHeight: null,
   justify: false,
+  underline: false,
   /**
    *
    * @param {CanvasRenderingContext2D} ctx
@@ -68,9 +69,9 @@ const canvasTxt = {
     const spaceWidth = this.justify ? ctx.measureText(SPACE).width : 0
 
     temptextarray.forEach(txtt => {
-      let textwidth = ctx.measureText(txtt).width
+      let textwidth = ctx.measureText(txtt.trim()).width
       if (textwidth <= width) {
-        textarray.push(txtt)
+        textarray.push({ text: txtt.trim(), width: textwidth })
       } else {
         let temptext = txtt
         let linelen = width
@@ -113,16 +114,19 @@ const canvasTxt = {
 
           temptext = temptext.substr(textlen)
           textwidth = ctx.measureText(temptext).width
-          textarray.push(texttoprint)
+          textarray.push({
+            text: texttoprint,
+            width: ctx.measureText(texttoprint).width
+          })
         }
         if (textwidth > 0) {
-          textarray.push(temptext)
+          textarray.push({ text: temptext, width: textwidth })
         }
       }
       // end foreach temptextarray
     })
 
-    textarray = textarray.filter(txtline => txtline != ' ')
+    textarray = textarray.filter(txtline => txtline.text != ' ')
 
     const charHeight = this.lineHeight ? this.lineHeight : this.fontSize //close approximation of height with width
     const vheight = charHeight * (textarray.length - 1)
@@ -161,13 +165,30 @@ const canvasTxt = {
           height / 2 +
           parseInt(this.fontSize) / 2 -
           Math.floor(textarray.length / 2) * charHeight
-        console.log('fontSize = ', this.fontSize, 'char height = ', charHeight)
       }
     }
+
     ctx.textBaseline = 'bottom'
+    const offset = this.getBaseLineOffset(ctx, 'abbcdefgyABCDGI', style)
+    ctx.lineWidth = '2'
     //print all lines of text
     textarray.forEach(txtline => {
-      ctx.fillText(txtline, textanchor, txtY)
+      ctx.fillText(txtline.text, textanchor, txtY)
+
+      const underlineY = txtY - offset + 2
+      if (this.underline) {
+        if (this.align == 'left') {
+          ctx.moveTo(textanchor, underlineY)
+          ctx.lineTo(textanchor + txtline.width, underlineY)
+        } else if (this.align == 'right') {
+          ctx.moveTo(textanchor, underlineY)
+          ctx.lineTo(textanchor - txtline.width, underlineY)
+        } else if (this.align == 'center') {
+          ctx.moveTo(textanchor - txtline.width / 2, underlineY)
+          ctx.lineTo(textanchor + txtline.width / 2, underlineY)
+        }
+        ctx.stroke()
+      }
       txtY += charHeight
     })
 
@@ -208,6 +229,20 @@ const canvasTxt = {
     ctx.font = previousFont
 
     return height
+  },
+
+  getBaseLineOffset: function(ctx, text, style) {
+    const previousTextBaseline = ctx.textBaseline
+    const previousFont = ctx.font
+
+    ctx.font = style
+    ctx.textBaseline = 'alphabetic'
+    const { fontBoundingBoxDescent: offset } = ctx.measureText(text)
+
+    // Reset baseline
+    ctx.textBaseline = previousTextBaseline
+    ctx.font = previousFont
+    return offset
   },
 
   /**

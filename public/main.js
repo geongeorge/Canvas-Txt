@@ -1,4 +1,5 @@
 let canvasTxt = window.canvasTxt.default
+let createCanvasTxt = window.canvasTxt.createCanvasTxt
 
 var c = document.getElementById('myCanvas')
 var ctx = c.getContext('2d')
@@ -16,5 +17,20 @@ canvasTxt.vAlign = 'middle'
 // canvasTxt.justify = true
 
 let { height } = canvasTxt.drawText(ctx, txt, 120, 120, 250, 200)
+
+const fontDefault = {
+  // debug: true,
+  fontWeight: '100',
+  fontStyle: 'oblique',
+  fontVariant: 'small-caps',
+  align: 'center',
+  vAlign: 'middle',
+}
+
+const presetH1 = createCanvasTxt({...fontDefault, fontSize: 28 });
+const presetH5 = createCanvasTxt({...fontDefault, fontSize: 16 });
+
+presetH5.drawText(ctx, txt, 120, 280, 250, 200);
+presetH1.drawText(ctx, txt, 120, 20, 250, 100);
 
 console.log(`Total height = ${height}`)

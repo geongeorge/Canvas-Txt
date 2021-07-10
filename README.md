@@ -140,6 +140,34 @@ canvasTxt.justify = false
 canvasTxt.drawText(ctx, txt, 100, 200, 200, 200)
 ```
 
+## Example factory method
+```javascript
+import { createCanvasTxt } from 'canvas-txt'
+
+const c = document.getElementById('myCanvas')
+const ctx = c.getContext('2d')
+
+//You can use \n to define custom line breaks
+const txt = 'Lorem \nipsum dolor sit amet'
+
+//You can also use other methods alongside this
+ctx.fillStyle = '#ff0000' //red color text
+
+const fontDefault = {
+  fontWeight: '100',
+  fontStyle: 'oblique',
+  fontVariant: 'small-caps',
+  align: 'center',
+  vAlign: 'middle',
+}
+
+const presetH1 = createCanvasTxt({...fontDefault, fontSize: 28 });
+const presetH5 = createCanvasTxt({...fontDefault, fontSize: 16 });
+
+presetH5.drawText(ctx, txt, 120, 280, 250, 200);
+presetH1.drawText(ctx, txt, 120, 20, 250, 100);
+```
+
 ## React wrapper
 
 A wrapper of this library is available for react. Check [neomusic/react-canvas-txt](https://github.com/neomusic/react-canvas-txt)

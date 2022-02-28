@@ -110,6 +110,9 @@ var canvasTxt = window.canvasTxt.default
 | `fontWeight`  |   `''`   | Font weight, same as css font-weight. Examples: `bold`, `100`                  |
 | `lineHeight`  |  `null`  | Line height of the text, if set to null it tries to auto-detect the value      |
 |   `justify`   | `false`  | Justify text if `true`, it will insert spaces between words when necessary.    |
+|  `stroke`     |  `true`  | Stroke text if `true`, it will add stroke outer the text.                      |
+| `strokeWidth` |   `1`    | Stroke line width.                                                             |
+| `strokeColor` | `black`  | Stroke color.                                                                  |
 
 ## Methods
 
@@ -137,6 +140,9 @@ canvasTxt.align = 'left'
 canvasTxt.lineHeight = 60
 canvasTxt.debug = true //shows debug info
 canvasTxt.justify = false
+canvasTxt.stroke = true // set the stroke
+canvasTxt.strokeColor = '#FF0000' // stroke color
+canvasTxt.strokeWidth = 1 // stroke line width
 canvasTxt.drawText(ctx, txt, 100, 200, 200, 200)
 ```
 

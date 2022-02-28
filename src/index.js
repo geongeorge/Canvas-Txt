@@ -12,6 +12,9 @@ const canvasTxt = {
   font: 'Arial',
   lineHeight: null,
   justify: false,
+  stroke: true,
+  strokeWidth: 1,
+  strokeColor: 'black',
   /**
    *
    * @param {CanvasRenderingContext2D} ctx
@@ -138,6 +141,16 @@ const canvasTxt = {
     textarray.forEach(txtline => {
       txtline = txtline.trim()
       ctx.fillText(txtline, textanchor, txtY)
+
+      // add stroke
+      if (this.stroke) {
+        const temp = ctx.fillStyle;
+        ctx.strokeStyle = this.strokeColor;
+        ctx.lineWidth = this.strokeWidth
+        ctx.strokeText(txtline, textanchor, txtY);
+        ctx.fillStyle = temp;
+      }
+
       txtY += charHeight
     })
 

@@ -1,9 +1,9 @@
-let canvasTxt = window.canvasTxt.default
+import canvasTxt from '../canvas-txt'
 
-var c = document.getElementById('myCanvas')
-var ctx = c.getContext('2d')
+const c = document.getElementById('myCanvas')
+const ctx = c.getContext('2d')
 
-var txt =
+const txt =
   'Lorem ipsum dolor sit ame Lorem ipsum dolor sit ame Lorem ipsum dolor sit ame'
 
 canvasTxt.fontSize = 24

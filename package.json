@@ -7,8 +7,8 @@
     "dist"
   ],
   "scripts": {
-    "build": "vite build",
     "dev": "vite serve",
+    "build": "tsc && vite build",
     "prepare": "yarn build"
   },
   "main": "./dist/canvas-txt.umd.cjs",
@@ -38,6 +38,7 @@
     "es6"
   ],
   "devDependencies": {
+    "typescript": "^4.7.4",
     "vite": "^3.0.4"
   }
 }

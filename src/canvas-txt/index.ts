@@ -21,9 +21,9 @@ const canvasTxt = {
    * @param {number} width
    * @param {number} height
    */
-  drawText: function(ctx, mytext, x, y, width, height) {
+  drawText: function (ctx, mytext, x, y, width, height) {
     // Parse all to integers
-    ;[x, y, width, height] = [x, y, width, height].map(el => parseInt(el))
+    ;[x, y, width, height] = [x, y, width, height].map((el) => parseInt(el))
 
     if (width <= 0 || height <= 0 || this.fontSize <= 0) {
       //width or height or font size cannot be 0
@@ -67,7 +67,7 @@ const canvasTxt = {
 
     const spaceWidth = this.justify ? ctx.measureText(SPACE).width : 0
 
-    temptextarray.forEach(txtt => {
+    temptextarray.forEach((txtt) => {
       let textwidth = ctx.measureText(txtt).width
       if (textwidth <= width) {
         textarray.push(txtt)
@@ -135,7 +135,7 @@ const canvasTxt = {
       txtY -= negoffset
     }
     //print all lines of text
-    textarray.forEach(txtline => {
+    textarray.forEach((txtline) => {
       txtline = txtline.trim()
       ctx.fillText(txtline, textanchor, txtY)
       txtY += charHeight
@@ -167,7 +167,7 @@ const canvasTxt = {
     return { height: TEXT_HEIGHT }
   },
   // Calculate Height of the font
-  getTextHeight: function(ctx, text, style) {
+  getTextHeight: function (ctx, text, style) {
     const previousTextBaseline = ctx.textBaseline
     const previousFont = ctx.font
 
@@ -195,7 +195,7 @@ const canvasTxt = {
    * @param {string} spaceChar
    * @param {number} width
    */
-  justifyLine: function(ctx, line, spaceWidth, spaceChar, width) {
+  justifyLine: function (ctx, line, spaceWidth, spaceChar, width) {
     const text = line.trim()
 
     const lineWidth = ctx.measureText(text).width
@@ -215,14 +215,14 @@ const canvasTxt = {
     }
     spaces = spaces.join('')
 
-    const justifiedText = text.replace(/\s+/g, match => {
+    const justifiedText = text.replace(/\s+/g, (match) => {
       const allSpaces = extraSpaces > 0 ? spaces + spaceChar : spaces
       extraSpaces--
       return match + allSpaces
     })
 
     return justifiedText
-  }
+  },
 }
 
 export default canvasTxt

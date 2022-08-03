@@ -6,7 +6,7 @@ export default defineConfig({
   build: {
     outDir: '../dist',
     lib: {
-      entry: resolve(__dirname, 'src/canvas-txt/index.js'),
+      entry: resolve(__dirname, 'src/canvas-txt/index.ts'),
       name: 'canvasTxt',
       formats: ['es', 'umd'],
       fileName: 'canvas-txt'

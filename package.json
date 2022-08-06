@@ -40,10 +40,9 @@
   ],
   "devDependencies": {
     "typescript": "^4.7.4",
-    "vite": "^3.0.4"
-  },
-  "dependencies": {
+    "vite": "^3.0.4",
     "@vitejs/plugin-vue": "^3.0.1",
     "vue": "^3.2.37"
-  }
+  },
+  "dependencies": {}
 }

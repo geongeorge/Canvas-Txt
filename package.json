@@ -7,8 +7,9 @@
     "dist"
   ],
   "scripts": {
-    "dev": "vite serve",
-    "build": "tsc && vite build",
+    "dev": "vite serve --config config/vite.config.docs.ts",
+    "build": "tsc && vite build --config config/vite.config.ts",
+    "build:docs": "tsc && vite build --config config/vite.config.docs.ts",
     "prepare": "yarn build"
   },
   "main": "./dist/canvas-txt.umd.cjs",
@@ -40,5 +41,9 @@
   "devDependencies": {
     "typescript": "^4.7.4",
     "vite": "^3.0.4"
+  },
+  "dependencies": {
+    "@vitejs/plugin-vue": "^3.0.1",
+    "vue": "^3.2.37"
   }
 }

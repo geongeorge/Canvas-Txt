@@ -142,19 +142,19 @@ const canvasTxt = {
 
     if (this.debug) {
       // Text box
-      ctx.lineWidth = 3
-      ctx.strokeStyle = '#00909e'
+      ctx.lineWidth = 1
+      ctx.strokeStyle = '#3120E0'
       ctx.strokeRect(x, y, width, height)
 
-      ctx.lineWidth = 2
+      ctx.lineWidth = 1
       // Horizontal Center
-      ctx.strokeStyle = '#f6d743'
+      ctx.strokeStyle = '#59CE8F'
       ctx.beginPath()
       ctx.moveTo(textanchor, y)
       ctx.lineTo(textanchor, yEnd)
       ctx.stroke()
       // Vertical Center
-      ctx.strokeStyle = '#ff6363'
+      ctx.strokeStyle = '#B9005B'
       ctx.beginPath()
       ctx.moveTo(x, debugY)
       ctx.lineTo(xEnd, debugY)

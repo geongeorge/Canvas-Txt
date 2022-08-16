@@ -121,12 +121,15 @@ const canvasTxt = {
     let debugY = y
     // Vertical Align
     if (this.vAlign === 'top') {
-      txtY = y + this.fontSize
+      ctx.textBaseline = 'top'
+      txtY = y
     } else if (this.vAlign === 'bottom') {
+      ctx.textBaseline = 'bottom'
       txtY = yEnd - vheight
       debugY = yEnd
     } else {
       //defaults to center
+      ctx.textBaseline = 'bottom'
       debugY = y + height / 2
       txtY -= negoffset
     }

@@ -21,34 +21,30 @@ const canvasTxt = {
    * @param {number} width
    * @param {number} height
    */
-  drawText: function(ctx, mytext, x, y, width, height) {
-    // Parse all to integers
-    ;[x, y, width, height] = [x, y, width, height].map(el => parseInt(el))
-
+  drawText: function (
+    ctx: CanvasRenderingContext2D,
+    mytext: string,
+    x: number,
+    y: number,
+    width: number,
+    height: number
+  ) {
     if (width <= 0 || height <= 0 || this.fontSize <= 0) {
       //width or height or font size cannot be 0
-      return
+      return { height: 0 }
     }
 
     // End points
     const xEnd = x + width
     const yEnd = y + height
 
-    if (this.textSize) {
-      console.error(
-        '%cCanvas-Txt:',
-        'font-weight: bold;',
-        'textSize is depricated and has been renamed to fontSize'
-      )
-    }
-
     const { fontStyle, fontVariant, fontWeight, fontSize, font } = this
     const style = `${fontStyle} ${fontVariant} ${fontWeight} ${fontSize}px ${font}`
     ctx.font = style
 
-    let txtY = y + height / 2 + parseInt(this.fontSize) / 2
+    let txtY = y + height / 2 + this.fontSize / 2
 
-    let textanchor
+    let textanchor: number
 
     if (this.align === 'right') {
       textanchor = xEnd
@@ -62,12 +58,12 @@ const canvasTxt = {
     }
 
     //added one-line only auto linebreak feature
-    let textarray = []
+    let textarray: any[] = []
     let temptextarray = mytext.split('\n')
 
     const spaceWidth = this.justify ? ctx.measureText(SPACE).width : 0
 
-    temptextarray.forEach(txtt => {
+    temptextarray.forEach((txtt) => {
       let textwidth = ctx.measureText(txtt).width
       if (textwidth <= width) {
         textarray.push(txtt)
@@ -135,7 +131,7 @@ const canvasTxt = {
       txtY -= negoffset
     }
     //print all lines of text
-    textarray.forEach(txtline => {
+    textarray.forEach((txtline) => {
       txtline = txtline.trim()
       ctx.fillText(txtline, textanchor, txtY)
       txtY += charHeight
@@ -167,7 +163,11 @@ const canvasTxt = {
     return { height: TEXT_HEIGHT }
   },
   // Calculate Height of the font
-  getTextHeight: function(ctx, text, style) {
+  getTextHeight: function (
+    ctx: CanvasRenderingContext2D,
+    text: string,
+    style: string
+  ) {
     const previousTextBaseline = ctx.textBaseline
     const previousFont = ctx.font
 
@@ -195,7 +195,13 @@ const canvasTxt = {
    * @param {string} spaceChar
    * @param {number} width
    */
-  justifyLine: function(ctx, line, spaceWidth, spaceChar, width) {
+  justifyLine: function (
+    ctx: CanvasRenderingContext2D,
+    line: string,
+    spaceWidth: number,
+    spaceChar: string,
+    width: number
+  ) {
     const text = line.trim()
 
     const lineWidth = ctx.measureText(text).width
@@ -209,20 +215,20 @@ const canvasTxt = {
     const nbSpacesMinimum = Math.floor(nbSpacesToInsert / nbSpaces)
     let extraSpaces = nbSpacesToInsert - nbSpaces * nbSpacesMinimum
 
-    let spaces = []
+    let spaces: any[] | string = []
     for (let i = 0; i < nbSpacesMinimum; i++) {
       spaces.push(spaceChar)
     }
     spaces = spaces.join('')
 
-    const justifiedText = text.replace(/\s+/g, match => {
+    const justifiedText = text.replace(/\s+/g, (match) => {
       const allSpaces = extraSpaces > 0 ? spaces + spaceChar : spaces
       extraSpaces--
       return match + allSpaces
     })
 
     return justifiedText
-  }
+  },
 }
 
 export default canvasTxt

@@ -31,7 +31,7 @@ const canvasTxt = {
   ) {
     if (width <= 0 || height <= 0 || this.fontSize <= 0) {
       //width or height or font size cannot be 0
-      return
+      return { height: 0 }
     }
 
     // End points

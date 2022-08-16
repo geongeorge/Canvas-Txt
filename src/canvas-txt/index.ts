@@ -15,7 +15,7 @@ const canvasTxt = {
   /**
    *
    * @param {CanvasRenderingContext2D} ctx
-   * @param {string} mytext
+   * @param {string} myText
    * @param {number} x
    * @param {number} y
    * @param {number} width
@@ -23,7 +23,7 @@ const canvasTxt = {
    */
   drawText: function (
     ctx: CanvasRenderingContext2D,
-    mytext: string,
+    myText: string,
     x: number,
     y: number,
     width: number,
@@ -44,79 +44,79 @@ const canvasTxt = {
 
     let txtY = y + height / 2 + this.fontSize / 2
 
-    let textanchor: number
+    let textAnchor: number
 
     if (this.align === 'right') {
-      textanchor = xEnd
+      textAnchor = xEnd
       ctx.textAlign = 'right'
     } else if (this.align === 'left') {
-      textanchor = x
+      textAnchor = x
       ctx.textAlign = 'left'
     } else {
-      textanchor = x + width / 2
+      textAnchor = x + width / 2
       ctx.textAlign = 'center'
     }
 
     //added one-line only auto linebreak feature
-    let textarray: any[] = []
-    let temptextarray = mytext.split('\n')
+    let textArray: any[] = []
+    let tempTextArray = myText.split('\n')
 
     const spaceWidth = this.justify ? ctx.measureText(SPACE).width : 0
 
-    temptextarray.forEach((txtt) => {
-      let textwidth = ctx.measureText(txtt).width
-      if (textwidth <= width) {
-        textarray.push(txtt)
+    tempTextArray.forEach((singleLine) => {
+      let textWidth = ctx.measureText(singleLine).width
+      if (textWidth <= width) {
+        textArray.push(singleLine)
       } else {
-        let temptext = txtt
-        let linelen = width
-        let textlen
-        let textpixlen
-        let texttoprint
-        textwidth = ctx.measureText(temptext).width
-        while (textwidth > linelen) {
-          textlen = 0
-          textpixlen = 0
-          texttoprint = ''
-          while (textpixlen < linelen) {
-            textlen++
-            texttoprint = temptext.substr(0, textlen)
-            textpixlen = ctx.measureText(temptext.substr(0, textlen)).width
+        let tempText = singleLine
+        let lineLen = width
+        let textLen
+        let textPixLen
+        let textToPrint
+        textWidth = ctx.measureText(tempText).width
+        while (textWidth > lineLen) {
+          textLen = 0
+          textPixLen = 0
+          textToPrint = ''
+          while (textPixLen < lineLen) {
+            textLen++
+            textToPrint = tempText.substr(0, textLen)
+            textPixLen = ctx.measureText(tempText.substr(0, textLen)).width
           }
           // Remove last character that was out of the box
-          textlen--
-          texttoprint = texttoprint.substr(0, textlen)
+          textLen--
+          textToPrint = textToPrint.substr(0, textLen)
           //if statement ensures a new line only happens at a space, and not amidst a word
-          const backup = textlen
-          if (temptext.substr(textlen, 1) != ' ') {
-            while (temptext.substr(textlen, 1) != ' ' && textlen != 0) {
-              textlen--
+          const backup = textLen
+          if (tempText.substr(textLen, 1) != ' ') {
+            while (tempText.substr(textLen, 1) != ' ' && textLen != 0) {
+              textLen--
             }
-            if (textlen == 0) {
-              textlen = backup
+            if (textLen == 0) {
+              textLen = backup
             }
-            texttoprint = temptext.substr(0, textlen)
+            textToPrint = tempText.substr(0, textLen)
           }
 
-          texttoprint = this.justify
-            ? this.justifyLine(ctx, texttoprint, spaceWidth, SPACE, width)
-            : texttoprint
+          textToPrint = this.justify
+            ? this.justifyLine(ctx, textToPrint, spaceWidth, SPACE, width)
+            : textToPrint
 
-          temptext = temptext.substr(textlen)
-          textwidth = ctx.measureText(temptext).width
-          textarray.push(texttoprint)
+          tempText = tempText.substr(textLen)
+          textWidth = ctx.measureText(tempText).width
+          textArray.push(textToPrint)
         }
-        if (textwidth > 0) {
-          textarray.push(temptext)
+        if (textWidth > 0) {
+          textArray.push(tempText)
         }
       }
-      // end foreach temptextarray
+      // end foreach tempTextArray
     })
     const charHeight = this.lineHeight
       ? this.lineHeight
-      : this.getTextHeight(ctx, mytext, style) //close approximation of height with width
-    const vheight = charHeight * (textarray.length - 1)
-    const negoffset = vheight / 2
+      : this.getTextHeight(ctx, myText, style) //close approximation of height with width
+    const vHeight = charHeight * (textArray.length - 1)
+    const negOffset = vHeight / 2
 
     let debugY = y
     // Vertical Align
@@ -125,18 +125,18 @@ const canvasTxt = {
       txtY = y
     } else if (this.vAlign === 'bottom') {
       ctx.textBaseline = 'bottom'
-      txtY = yEnd - vheight
+      txtY = yEnd - vHeight
       debugY = yEnd
     } else {
       //defaults to center
       ctx.textBaseline = 'bottom'
       debugY = y + height / 2
-      txtY -= negoffset
+      txtY -= negOffset
     }
     //print all lines of text
-    textarray.forEach((txtline) => {
+    textArray.forEach((txtline) => {
       txtline = txtline.trim()
-      ctx.fillText(txtline, textanchor, txtY)
+      ctx.fillText(txtline, textAnchor, txtY)
       txtY += charHeight
     })
 
@@ -150,8 +150,8 @@ const canvasTxt = {
       // Horizontal Center
       ctx.strokeStyle = '#59CE8F'
       ctx.beginPath()
-      ctx.moveTo(textanchor, y)
-      ctx.lineTo(textanchor, yEnd)
+      ctx.moveTo(textAnchor, y)
+      ctx.lineTo(textAnchor, yEnd)
       ctx.stroke()
       // Vertical Center
       ctx.strokeStyle = '#B9005B'
@@ -161,7 +161,7 @@ const canvasTxt = {
       ctx.stroke()
     }
 
-    const TEXT_HEIGHT = vheight + charHeight
+    const TEXT_HEIGHT = vHeight + charHeight
 
     return { height: TEXT_HEIGHT }
   },

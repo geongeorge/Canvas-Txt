@@ -25,6 +25,7 @@ Better way to render text on the HTML5 Canvas
 - [x] Auto line breaks
 - [x] Horizontal Align
 - [x] Vertical Align
+- [x] Justify Align
 - [x] Easy Debugging
 
 ## Demo

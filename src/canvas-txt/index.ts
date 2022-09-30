@@ -58,60 +58,87 @@ const canvasTxt = {
     }
 
     //added one-line only auto linebreak feature
-    let textArray: any[] = []
-    let tempTextArray = myText.split('\n')
+    let textArray: string[] = []
+    let initialTextArray = myText.split('\n')
 
     const spaceWidth = this.justify ? ctx.measureText(SPACE).width : 0
 
-    tempTextArray.forEach((singleLine) => {
+    const t0 = performance.now();
+
+    let index = 0
+    for (const singleLine of initialTextArray) {
       let textWidth = ctx.measureText(singleLine).width
+      const singleLineLength = singleLine.length
+
       if (textWidth <= width) {
         textArray.push(singleLine)
-      } else {
-        let tempText = singleLine
-        let lineLen = width
-        let textLen
-        let textPixLen
-        let textToPrint
-        textWidth = ctx.measureText(tempText).width
-        while (textWidth > lineLen) {
-          textLen = 0
-          textPixLen = 0
-          textToPrint = ''
-          while (textPixLen < lineLen) {
-            textLen++
-            textToPrint = tempText.substr(0, textLen)
-            textPixLen = ctx.measureText(tempText.substr(0, textLen)).width
-          }
-          // Remove last character that was out of the box
-          textLen--
-          textToPrint = textToPrint.substr(0, textLen)
-          //if statement ensures a new line only happens at a space, and not amidst a word
-          const backup = textLen
-          if (tempText.substr(textLen, 1) != ' ') {
-            while (tempText.substr(textLen, 1) != ' ' && textLen != 0) {
-              textLen--
-            }
-            if (textLen == 0) {
-              textLen = backup
-            }
-            textToPrint = tempText.substr(0, textLen)
-          }
-
-          textToPrint = this.justify
-            ? this.justifyLine(ctx, textToPrint, spaceWidth, SPACE, width)
-            : textToPrint
-
-          tempText = tempText.substr(textLen)
-          textWidth = ctx.measureText(tempText).width
-          textArray.push(textToPrint)
-        }
-        if (textWidth > 0) {
-          textArray.push(tempText)
-        }
+        continue
       }
-      // end foreach tempTextArray
-    })
+
+      let tempLine = singleLine
+
+      let splitPoint
+      let splitPointWidth
+      let averageSplitPoint = 0
+      let textToPrint = ''
+
+      while (textWidth > width) {
+        index++
+        splitPoint = averageSplitPoint
+        splitPointWidth = splitPoint === 0 ? 0 : ctx.measureText(singleLine.substring(0, splitPoint)).width
+
+        // if (splitPointWidth === width) Nailed
+
+        if (splitPointWidth < width) {
+          while (splitPointWidth < width && splitPoint < singleLineLength) {
+            splitPoint++
+            splitPointWidth = ctx.measureText(tempLine.substring(0, splitPoint)).width
+          }
+        } else if (splitPointWidth > width) {
+          while (splitPointWidth > width) {
+            splitPoint--
+            splitPointWidth = ctx.measureText(tempLine.substring(0, splitPoint)).width
+          }
+        }
+
+        console.log("averageSplitPoint", averageSplitPoint)
+
+        averageSplitPoint = Math.round(averageSplitPoint + (splitPoint - averageSplitPoint) / index)
+
+        // Remove last character that was out of the box
+        splitPoint--
+
+        // Ensures a new line only happens at a space, and not amidst a word
+        let tempSplitPoint = splitPoint
+        if (tempLine.substring(tempSplitPoint, tempSplitPoint + 1) != ' ') {
+          while (tempLine.substring(tempSplitPoint, tempSplitPoint + 1) != ' ' && tempSplitPoint != 0) {
+            tempSplitPoint--
+          }
+          if (tempSplitPoint !== 0) {
+            splitPoint = tempSplitPoint
+          }
+        }
+
+        // Finally sets text to print
+        textToPrint = singleLine.substring(0, splitPoint)
+        textToPrint = this.justify
+          ? this.justifyLine(ctx, textToPrint, spaceWidth, SPACE, width)
+          : textToPrint
+
+        textToPrint = tempLine.substring(0, splitPoint)
+        textArray.push(textToPrint)
+        tempLine = tempLine.substring(splitPoint)
+        textWidth = ctx.measureText(tempLine).width
+      }
+
+      if (textWidth > 0) {
+        textArray.push(tempLine)
+      }
+    }
+
+    const t1 = performance.now();
+    console.log(`Call to doSomething took ${t1 - t0} milliseconds.`);
+
     const charHeight = this.lineHeight
       ? this.lineHeight
       : this.getTextHeight(ctx, myText, style) //close approximation of height with width

@@ -66,6 +66,7 @@ const canvasTxt = {
     const t0 = performance.now();
 
     let index = 0
+    let averageSplitPoint = 0
     for (const singleLine of initialTextArray) {
       let textWidth = ctx.measureText(singleLine).width
       const singleLineLength = singleLine.length
@@ -79,7 +80,6 @@ const canvasTxt = {
 
       let splitPoint
       let splitPointWidth
-      let averageSplitPoint = 0
       let textToPrint = ''
 
       while (textWidth > width) {

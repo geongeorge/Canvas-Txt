@@ -81,7 +81,7 @@ const canvasTxt = {
           while (textpixlen < linelen) {
             textlen++
             texttoprint = temptext.substr(0, textlen)
-            textpixlen = ctx.measureText(temptext.substr(0, textlen)).width
+            textpixlen = ctx.measureText(texttoprint).width
           }
           // Remove last character that was out of the box
           textlen--

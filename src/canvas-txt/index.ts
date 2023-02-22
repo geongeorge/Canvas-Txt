@@ -63,6 +63,7 @@ const canvasTxt = {
 
     const spaceWidth = this.justify ? ctx.measureText(SPACE).width : 0
 
+
     const t0 = performance.now();
 
     let index = 0

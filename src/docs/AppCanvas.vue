@@ -77,7 +77,7 @@ function redrawAndMeasure() {
   renderTime.value = t1 - t0
   console.log(`Rendering took ${renderTime.value} milliseconds.`);
 }
-const deboundedRedrawAndMeasure = debounce(redrawAndMeasure, 800)
+const deboundedRedrawAndMeasure = debounce(redrawAndMeasure, 30)
 
 watch(config, () => {
   deboundedRedrawAndMeasure()

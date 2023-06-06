@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import canvasTxt from 'canvas-txt';
-import { ref, reactive, onMounted, watch } from 'vue';
+import { drawText, type CanvasTextConfig } from 'canvas-txt'
+import { ref, reactive, onMounted, watch } from 'vue'
 import type { Ref } from 'vue'
 import debounce from 'lodash/debounce'
 import cloneDeep from 'lodash/cloneDeep'
@@ -13,27 +13,30 @@ const renderTime = ref(0)
 const canvasSize = { w: 500, h: 500 }
 
 const initialConfig = {
-      text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin convallis eros.',
-      pos: { x: 100, y: 150 },
-      size: { w: 300, h: 200 },
-      font: {
-        size: 38,
-        lineHeight: null
-      },
-      debug: false,
-      align: 'center',
-      vAlign: 'middle',
-      justify: false,
-      min: 0,
-      max: 800
-    }
+  text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin convallis eros.',
+  pos: { x: 100, y: 150 },
+  size: { w: 300, h: 200 },
+  font: {
+    size: 38,
+    lineHeight: null,
+  },
+  debug: false,
+  align: 'center',
+  vAlign: 'middle',
+  justify: false,
+  min: 0,
+  max: 800,
+}
 
 const config = reactive(cloneDeep(initialConfig))
 
 function resetConfig() {
   for (const key of Object.keys(initialConfig)) {
     if (key in config) {
-      config[key] = typeof initialConfig[key] === 'object' ? cloneDeep(initialConfig[key]) : initialConfig[key]
+      config[key] =
+        typeof initialConfig[key] === 'object'
+          ? cloneDeep(initialConfig[key])
+          : initialConfig[key]
     }
   }
 }
@@ -45,37 +48,40 @@ function initializeCanvas() {
 }
 
 function renderText() {
-  
-
   if (!context.value) return
 
   const ctx = context.value
 
   ctx.clearRect(0, 0, canvasSize.w, canvasSize.h)
 
-  canvasTxt.font = "Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue'"
-  canvasTxt.fontSize = 24
-  canvasTxt.fontWeight = '100'
-  // canvasTxt.fontStyle = 'oblique'
-  // canvasTxt.fontVariant = 'small-caps'
-  canvasTxt.debug = config.debug
-  canvasTxt.align = config.align
-  canvasTxt.vAlign = config.vAlign
+  const myConfig: CanvasTextConfig = {
+    x: config.pos.x,
+    y: config.pos.y,
+    width: config.size.w,
+    height: config.size.h,
+    font: "Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue'",
+    fontSize: 24,
+    fontWeight: '100',
+    // fontStyle: 'oblique',
+    // fontVariant: 'small-caps',
+    debug: config.debug,
+    align: config.align as CanvasTextConfig['align'],
+    vAlign: config.vAlign as CanvasTextConfig['vAlign'],
+    justify: config.justify,
+  }
 
-  canvasTxt.justify = config.justify
-
-  const { height } = canvasTxt.drawText(ctx, config.text, config.pos.x, config.pos.y, config.size.w, config.size.h)
+  const { height } = drawText(ctx, config.text, myConfig)
 
   console.log(`Total height = ${height}`)
 }
 
 function redrawAndMeasure() {
-  console.log("Rerendering")
-  const t0 = performance.now();
+  console.log('Rerendering')
+  const t0 = performance.now()
   renderText()
-  const t1 = performance.now();
+  const t1 = performance.now()
   renderTime.value = t1 - t0
-  console.log(`Rendering took ${renderTime.value} milliseconds.`);
+  console.log(`Rendering took ${renderTime.value} milliseconds.`)
 }
 const deboundedRedrawAndMeasure = debounce(redrawAndMeasure, 30)
 
@@ -101,23 +107,50 @@ onMounted(() => {
           type="textarea"
           placeholder="Please input"
         />
-        <p>Canvas-txt uses the concept of textboxes borrowed from popular image editing softwares. 
-          You draw a rectangular box then place the text in the box. Turn on the debug mode(below) to see what is happening.</p>
+        <p>
+          Canvas-txt uses the concept of textboxes borrowed from popular image
+          editing softwares. You draw a rectangular box then place the text in
+          the box. Turn on the debug mode(below) to see what is happening.
+        </p>
         <div class="slider">
           <span class="label">Pos X</span>
-          <el-slider v-model="config.pos.x" show-input :min="0" :max="500" size="small" />
+          <el-slider
+            v-model="config.pos.x"
+            show-input
+            :min="0"
+            :max="500"
+            size="small"
+          />
         </div>
         <div class="slider">
           <span class="label">Pos y</span>
-          <el-slider v-model="config.pos.y" show-input :min="0" :max="500" size="small" />
+          <el-slider
+            v-model="config.pos.y"
+            show-input
+            :min="0"
+            :max="500"
+            size="small"
+          />
         </div>
         <div class="slider">
           <span class="label">Width</span>
-          <el-slider v-model="config.size.w" show-input :min="0" :max="500" size="small" />
+          <el-slider
+            v-model="config.size.w"
+            show-input
+            :min="0"
+            :max="500"
+            size="small"
+          />
         </div>
         <div class="slider">
           <span class="label">Height</span>
-          <el-slider v-model="config.size.h" show-input :min="0" :max="500" size="small" />
+          <el-slider
+            v-model="config.size.h"
+            show-input
+            :min="0"
+            :max="500"
+            size="small"
+          />
         </div>
         <br />
         <el-row>
@@ -131,7 +164,7 @@ onMounted(() => {
             </el-form-item>
           </el-col>
           <el-col :span="12">
-           <el-form-item label="Vertical Align">
+            <el-form-item label="Vertical Align">
               <el-select v-model="config.vAlign" placeholder="vAlign">
                 <el-option label="Middle" value="middle" />
                 <el-option label="Top" value="top" />
@@ -141,7 +174,7 @@ onMounted(() => {
           </el-col>
         </el-row>
         <br />
-        
+
         <el-row>
           <el-col :span="12">
             <el-checkbox v-model="config.justify" label="Justify Text" />
@@ -157,16 +190,21 @@ onMounted(() => {
     </div>
     <div class="bottom-text">
       Last render took {{ renderTime }} milliseconds.
-      <br>
-      You will notice a delay after you change a control, this is because the render function is <a href="https://www.geeksforgeeks.org/debouncing-in-javascript/" target="_blank">debounced</a>.
+      <br />
+      You will notice a delay after you change a control, this is because the
+      render function is
+      <a
+        href="https://www.geeksforgeeks.org/debouncing-in-javascript/"
+        target="_blank"
+        >debounced</a
+      >.
     </div>
   </div>
 </template>
 
 <style scoped>
-
 canvas {
-  background-color: #E7E6E8;
+  background-color: #e7e6e8;
   max-width: 100%;
 }
 
@@ -192,12 +230,11 @@ canvas {
   flex: 0 0 85%;
 }
 
-
 .flex {
   display: flex;
 }
 
-@media all and (max-width: 900px) { 
+@media all and (max-width: 900px) {
   .flex {
     flex-direction: column;
   }
@@ -218,6 +255,6 @@ canvas {
 
 .bottom-text {
   font-size: 0.8em;
-  color: #E7E6E8
+  color: #e7e6e8;
 }
 </style>

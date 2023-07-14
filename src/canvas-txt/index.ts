@@ -107,18 +107,18 @@ function drawText(
   if (config.debug) {
     // Text box
     ctx.lineWidth = 1
-    ctx.strokeStyle = '#3120E0'
+    ctx.strokeStyle = '#0C8CE9'
     ctx.strokeRect(x, y, width, height)
 
     ctx.lineWidth = 1
     // Horizontal Center
-    ctx.strokeStyle = '#59CE8F'
+    ctx.strokeStyle = '#0C8CE9'
     ctx.beginPath()
     ctx.moveTo(textAnchor, y)
     ctx.lineTo(textAnchor, yEnd)
     ctx.stroke()
     // Vertical Center
-    ctx.strokeStyle = '#B9005B'
+    ctx.strokeStyle = '#0C8CE9'
     ctx.beginPath()
     ctx.moveTo(x, debugY)
     ctx.lineTo(xEnd, debugY)

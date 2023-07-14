@@ -13,10 +13,10 @@
     "prepare": "yarn build"
   },
   "main": "./dist/canvas-txt.umd.js",
-  "module": "./dist/canvas-txt.js",
+  "module": "./dist/canvas-txt.mjs",
   "exports": {
     ".": {
-      "import": "./dist/canvas-txt.js",
+      "import": "./dist/canvas-txt.mjs",
       "require": "./dist/canvas-txt.umd.js"
     }
   },

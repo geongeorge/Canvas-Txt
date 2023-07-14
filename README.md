@@ -110,7 +110,7 @@ main()
 
 ## CDN
 
-See fiddle : <a href="https://jsfiddle.net/geongeorgek/9bamges1/10/">here</a>
+See fiddle : To be added
 
 ```html
 <script src="//unpkg.com/canvas-txt"></script>
@@ -121,7 +121,7 @@ const { drawText, getTextHeight, splitText } = window.canvasTxt
 /// ...remaining same
 ```
 
-![](https://i.imgur.com/qV2x2zV.jpg)
+![](./src/docs/canvas.jpg)
 
 ## Properties
 

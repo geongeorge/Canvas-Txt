@@ -57,7 +57,7 @@ import { drawText } from 'canvas-txt'
 const c = document.getElementById('myCanvas')
 const ctx = c.getContext('2d')
 
-ctx.clearRect(0, 0, canvasSize.w, canvasSize.h)
+ctx.clearRect(0, 0, 500, 500)
 
 const txt = 'Lorem ipsum dolor sit amet'
 

@@ -49,7 +49,7 @@ npm i canvas-txt
 <canvas id="myCanvas" width="500" height="500"></canvas>
 ```
 
-## Webpack
+## Bundler
 
 ```javascript
 import { drawText } from 'canvas-txt'
@@ -74,7 +74,7 @@ console.log(`Total height = ${height}`)
 
 ## Node canvas
 
-See Node js demo in `./src/node-test.ts`
+See Node js demo in [./src/node-test.ts](https://github.com/geongeorge/Canvas-Txt/blob/master/src/node-test.ts)
 
 ```js
 const { createCanvas } = require('canvas')

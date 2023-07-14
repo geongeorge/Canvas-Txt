@@ -144,9 +144,9 @@ const { drawText, getTextHeight, splitText } = window.canvasTxt
 
 ## Methods
 
-<!-- export { drawText, splitText, getTextHeight } -->
-
-interface Props
+```js
+import { drawText, splitText, getTextHeight } from 'canvas-txt'
+```
 
 | Method                                    | Description                                                                                                                                                                                                                     |
 | :---------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |

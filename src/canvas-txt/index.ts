@@ -39,8 +39,6 @@ function drawText(
   const { width, height, x, y } = inputConfig
   const config = { ...defaultConfig, ...inputConfig }
 
-  console.log('drawText', config)
-
   if (width <= 0 || height <= 0 || config.fontSize <= 0) {
     //width or height or font size cannot be 0
     return { height: 0 }

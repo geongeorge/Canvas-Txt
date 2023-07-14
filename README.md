@@ -1,9 +1,9 @@
 <div align="center">
 <img src="./src/docs/featured.png" width=600 alt="canvas-txt multiline text on html canvas">
 <h3>Canvas Txt 📐</h3>
-<blockquote>
-Transforming Your Canvas with Multiline Magic
-</blockquote>
+<p>
+Transforming Your Canvas with Multiline Magic ✨
+</p>
 
 <p align="center">
 

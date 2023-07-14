@@ -7,8 +7,7 @@ export default defineConfig({
     lib: {
       entry: 'canvas-txt/index.ts',
       name: 'canvasTxt',
-      formats: ['es', 'umd'],
-      fileName: 'canvas-txt'
-    }
-  }
+      fileName: 'canvas-txt',
+    },
+  },
 })

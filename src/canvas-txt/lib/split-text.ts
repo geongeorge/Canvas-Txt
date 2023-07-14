@@ -16,15 +16,28 @@ export default function splitText({
   justify,
   width,
 }: Props): string[] {
+  const textMap = new Map<string, number>()
+
+  const measureText = (text: string): number => {
+    let width = textMap.get(text)
+    if (width !== undefined) {
+      return width
+    }
+
+    width = ctx.measureText(text).width
+    textMap.set(text, width)
+    return width
+  }
+
   let textArray: string[] = []
   let initialTextArray = text.split('\n')
 
-  const spaceWidth = justify ? ctx.measureText(SPACE).width : 0
+  const spaceWidth = justify ? measureText(SPACE) : 0
 
   let index = 0
   let averageSplitPoint = 0
   for (const singleLine of initialTextArray) {
-    let textWidth = ctx.measureText(singleLine).width
+    let textWidth = measureText(singleLine)
     const singleLineLength = singleLine.length
 
     if (textWidth <= width) {
@@ -42,25 +55,19 @@ export default function splitText({
       index++
       splitPoint = averageSplitPoint
       splitPointWidth =
-        splitPoint === 0
-          ? 0
-          : ctx.measureText(singleLine.substring(0, splitPoint)).width
+        splitPoint === 0 ? 0 : measureText(singleLine.substring(0, splitPoint))
 
       // if (splitPointWidth === width) Nailed
       if (splitPointWidth < width) {
         while (splitPointWidth < width && splitPoint < singleLineLength) {
           splitPoint++
-          splitPointWidth = ctx.measureText(
-            tempLine.substring(0, splitPoint)
-          ).width
+          splitPointWidth = measureText(tempLine.substring(0, splitPoint))
           if (splitPoint === singleLineLength) break
         }
       } else if (splitPointWidth > width) {
         while (splitPointWidth > width) {
           splitPoint = Math.max(1, splitPoint - 1)
-          splitPointWidth = ctx.measureText(
-            tempLine.substring(0, splitPoint)
-          ).width
+          splitPointWidth = measureText(tempLine.substring(0, splitPoint))
           if (splitPoint === 0 || splitPoint === 1) break
         }
       }
@@ -106,7 +113,7 @@ export default function splitText({
         : textToPrint
       textArray.push(textToPrint)
       tempLine = tempLine.substring(splitPoint)
-      textWidth = ctx.measureText(tempLine).width
+      textWidth = measureText(tempLine)
     }
 
     if (textWidth > 0) {

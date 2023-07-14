@@ -1,8 +1,8 @@
 <div align="center">
-<img src="https://i.imgur.com/Te6TkKz.png" width=400 alt="canvas txt">
-<h3>Canvas Txt 📐 V2✍</h3>
+<img src="./src/docs/featured.png" width=600 alt="canvas-txt multiline text on html canvas">
+<h3>Canvas Txt 📐</h3>
 <blockquote>
-Better way to render text on the HTML5 Canvas
+Transforming Your Canvas with Multiline Magic
 </blockquote>
 
 <p align="center">
@@ -15,7 +15,7 @@ Better way to render text on the HTML5 Canvas
 
 </p>
 
-#### A Miniscule library to render text on HTML5 Canvas with ZERO dependencies 🆎
+#### A Miniscule library to render text on HTML5 Canvas with ZERO dependencies
 
 </div>
 

@@ -110,7 +110,7 @@ main()
 
 ## CDN
 
-See fiddle : To be added
+See fiddle : https://jsfiddle.net/geongeorgek/n5xw3ufj/2/
 
 ```html
 <script src="//unpkg.com/canvas-txt"></script>

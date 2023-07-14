@@ -1,9 +1,9 @@
 <div align="center">
-<img src="https://i.imgur.com/Te6TkKz.png" width=400 alt="canvas txt">
-<h3>Canvas Txt 📐✍</h3>
-<blockquote>
-Better way to render text on the HTML5 Canvas
-</blockquote>
+<img src="./src/docs/featured.png" width=600 alt="canvas-txt multiline text on html canvas">
+<h3>Canvas Txt 📐</h3>
+<p>
+Transforming Your Canvas with Multiline Magic ✨
+</p>
 
 <p align="center">
 
@@ -15,7 +15,7 @@ Better way to render text on the HTML5 Canvas
 
 </p>
 
-#### A Miniscule library to render text on HTML5 Canvas with ZERO dependencies 🆎
+#### A Miniscule library to render text on HTML5 Canvas with ZERO dependencies
 
 </div>
 
@@ -25,7 +25,9 @@ Better way to render text on the HTML5 Canvas
 - [x] Auto line breaks
 - [x] Horizontal Align
 - [x] Vertical Align
+- [x] Justify Align
 - [x] Easy Debugging
+- [x] Improved Performance
 
 ## Demo
 
@@ -34,11 +36,11 @@ See Demo: [Here](https://canvas-txt.geongeorge.com)
 ## Install
 
 ```
-npm install canvas-txt --save
+yarn add canvas-txt
 
 or
 
-yarn add canvas-txt
+npm i canvas-txt
 ```
 
 # Usage
@@ -50,96 +52,104 @@ yarn add canvas-txt
 ## Webpack
 
 ```javascript
-import canvasTxt from 'canvas-txt'
+import { drawText } from 'canvas-txt'
 
 const c = document.getElementById('myCanvas')
 const ctx = c.getContext('2d')
 
+ctx.clearRect(0, 0, canvasSize.w, canvasSize.h)
+
 const txt = 'Lorem ipsum dolor sit amet'
 
-canvasTxt.fontSize = 24
+const { height } = drawText(ctx, txt, {
+  x: 100,
+  y: 200,
+  width: 200,
+  height: 200,
+  fontSize: 24,
+})
 
-canvasTxt.drawText(ctx, txt, 100, 200, 200, 200)
-//canvasTxt.drawText(ctx,txt,x,y,width,height);
+console.log(`Total height = ${height}`)
 ```
 
 ## Node canvas
 
-See [nodejs demo](https://github.com/geongeorge/canvas-txt-node-canvas-demo)
+See Node js demo in `./src/node-test.ts`
 
 ```js
 const { createCanvas } = require('canvas')
+const { drawText } = require('canvas-txt')
+const fs = require('fs')
 
-const canvasTxt = require('canvas-txt').default
+// Or
+// import { createCanvas } from 'canvas'
+// import { drawText } from 'canvas-txt'
+// import * as fs from 'fs'
 
-const canvas = createCanvas(400, 400)
-const ctx = canvas.getContext('2d')
+function main() {
+  const canvas = createCanvas(400, 400)
+  const ctx = canvas.getContext('2d')
+  const txt = 'Hello World!'
 
-ctx.fillStyle = 'black'
-const txt = 'Lorem ipsum dolor sit amet'
+  const { height } = drawText(ctx, txt, {
+    x: 100,
+    y: 200,
+    width: 200,
+    height: 200,
+    fontSize: 24,
+  })
 
-canvasTxt.drawText(ctx, txt, 50, 50, 200, 200)
+  // Convert the canvas to a buffer in PNG format
+  const buffer = canvas.toBuffer('image/png')
+  fs.writeFileSync('output.png', buffer)
+  console.log(`Total height = ${height}`)
+}
+
+main()
 ```
 
 ## CDN
 
-See fiddle : <a href="https://jsfiddle.net/geongeorgek/9bamges1/10/">here</a>
+See fiddle : To be added
 
 ```html
 <script src="//unpkg.com/canvas-txt"></script>
 ```
 
 ```javascript
-var canvasTxt = window.canvasTxt.default
-/// ...remaining same as webpack
+const { drawText, getTextHeight, splitText } = window.canvasTxt
+/// ...remaining same
 ```
 
-![](https://i.imgur.com/qV2x2zV.jpg)
+![](./src/docs/canvas.jpg)
 
 ## Properties
 
-|  Properties   | Default  | Description                                                                    |
-| :-----------: | :------: | :----------------------------------------------------------------------------- |
-|    `debug`    | `false`  | Shows the border and align gravity for debugging purposes                      |
-|    `align`    | `center` | Text align. Other possible values: `left`, `right`                             |
-|   `vAlign`    | `middle` | Text vertical align. Other possible values: `top`, `bottom`                    |
-|  `fontSize`   |   `14`   | Font size of the text in px                                                    |
-|    `font`     | `Arial`  | Font family of the text                                                        |
-|  `fontStyle`  |   `''`   | Font style, same as css font-style. Examples: `italic`, `oblique 40deg`        |
-| `fontVariant` |   `''`   | Font variant, same as css font-variant. Examples: `small-caps`, `slashed-zero` |
-| `fontWeight`  |   `''`   | Font weight, same as css font-weight. Examples: `bold`, `100`                  |
-| `lineHeight`  |  `null`  | Line height of the text, if set to null it tries to auto-detect the value      |
-|   `justify`   | `false`  | Justify text if `true`, it will insert spaces between words when necessary.    |
+|  Properties   |   Default    | Description                                                                    |
+| :-----------: | :----------: | :----------------------------------------------------------------------------- |
+|    `width`    | **Required** | Width of the text box                                                          |
+|   `height`    | **Required** | Height of the text box                                                         |
+|      `x`      | **Required** | X position of the text box                                                     |
+|      `y`      | **Required** | Y position of the text box                                                     |
+|    `debug`    |   `false`    | Shows the border and align gravity for debugging purposes                      |
+|    `align`    |   `center`   | Text align. Other possible values: `left`, `right`                             |
+|   `vAlign`    |   `middle`   | Text vertical align. Other possible values: `top`, `bottom`                    |
+|    `font`     |   `Arial`    | Font family of the text                                                        |
+|  `fontSize`   |     `14`     | Font size of the text in px                                                    |
+|  `fontStyle`  |     `''`     | Font style, same as css font-style. Examples: `italic`, `oblique 40deg`        |
+| `fontVariant` |     `''`     | Font variant, same as css font-variant. Examples: `small-caps`, `slashed-zero` |
+| `fontWeight`  |     `''`     | Font weight, same as css font-weight. Examples: `bold`, `100`                  |
+| `lineHeight`  |    `null`    | Line height of the text, if set to null it tries to auto-detect the value      |
+|   `justify`   |   `false`    | Justify text if `true`, it will insert spaces between words when necessary.    |
 
 ## Methods
 
-| Method                                | Description                    |
-| :------------------------------------ | :----------------------------- |
-| `drawText(ctx,text,x,y,width,height)` | To draw the text to the canvas |
-
-## Example
-
-```javascript
-import canvasTxt from 'canvas-txt'
-
-const c = document.getElementById('myCanvas')
-const ctx = c.getContext('2d')
-
-//You can use \n to define custom line breaks
-const txt = 'Lorem \nipsum dolor sit amet'
-
-//You can also use other methods alongside this
-ctx.fillStyle = '#ff0000' //red color text
-
-canvasTxt.font = 'Verdana'
-canvasTxt.fontSize = 20
-canvasTxt.align = 'left'
-canvasTxt.lineHeight = 60
-canvasTxt.debug = true //shows debug info
-canvasTxt.justify = false
-canvasTxt.drawText(ctx, txt, 100, 200, 200, 200)
+```js
+import { drawText, splitText, getTextHeight } from 'canvas-txt'
 ```
 
-## React wrapper
-
-A wrapper of this library is available for react. Check [neomusic/react-canvas-txt](https://github.com/neomusic/react-canvas-txt)
+| Method                                    | Description                                                                                                                                                                                                                     |
+| :---------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `drawText(ctx,text, config)`              | To draw the text to the canvas                                                                                                                                                                                                  |
+| `splitText({ ctx, text, justify, width }` | To split the text `{ ctx: CanvasRenderingContext2D, text: string, justify: boolean, width: number }`                                                                                                                            |
+| `getTextHeight({ ctx, text, style })`     | To get the height of the text `{ ctx: CanvasRenderingContext2D, text: string, style: string (font style we pass to ctx.font) }` [ctx.font docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/font) |

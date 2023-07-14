@@ -1,7 +1,24 @@
-// Hair space character for precise justification
-const SPACE = '\u200a'
+import splitText from './lib/split-text'
+import getTextHeight from './lib/text-height'
 
-const canvasTxt = {
+export interface CanvasTextConfig {
+  width: number
+  height: number
+  x: number
+  y: number
+  debug?: boolean
+  align?: 'left' | 'center' | 'right'
+  vAlign?: 'top' | 'middle' | 'bottom'
+  fontSize?: number
+  fontWeight?: string
+  fontStyle?: string
+  fontVariant?: string
+  font?: string
+  lineHeight?: number
+  justify?: boolean
+}
+
+const defaultConfig = {
   debug: false,
   align: 'center',
   vAlign: 'middle',
@@ -12,223 +29,105 @@ const canvasTxt = {
   font: 'Arial',
   lineHeight: null,
   justify: false,
-  /**
-   *
-   * @param {CanvasRenderingContext2D} ctx
-   * @param {string} mytext
-   * @param {number} x
-   * @param {number} y
-   * @param {number} width
-   * @param {number} height
-   */
-  drawText: function (
-    ctx: CanvasRenderingContext2D,
-    mytext: string,
-    x: number,
-    y: number,
-    width: number,
-    height: number
-  ) {
-    if (width <= 0 || height <= 0 || this.fontSize <= 0) {
-      //width or height or font size cannot be 0
-      return { height: 0 }
-    }
-
-    // End points
-    const xEnd = x + width
-    const yEnd = y + height
-
-    const { fontStyle, fontVariant, fontWeight, fontSize, font } = this
-    const style = `${fontStyle} ${fontVariant} ${fontWeight} ${fontSize}px ${font}`
-    ctx.font = style
-
-    let txtY = y + height / 2 + this.fontSize / 2
-
-    let textanchor: number
-
-    if (this.align === 'right') {
-      textanchor = xEnd
-      ctx.textAlign = 'right'
-    } else if (this.align === 'left') {
-      textanchor = x
-      ctx.textAlign = 'left'
-    } else {
-      textanchor = x + width / 2
-      ctx.textAlign = 'center'
-    }
-
-    //added one-line only auto linebreak feature
-    let textarray: any[] = []
-    let temptextarray = mytext.split('\n')
-
-    const spaceWidth = this.justify ? ctx.measureText(SPACE).width : 0
-
-    temptextarray.forEach((txtt) => {
-      let textwidth = ctx.measureText(txtt).width
-      if (textwidth <= width) {
-        textarray.push(txtt)
-      } else {
-        let temptext = txtt
-        let linelen = width
-        let textlen
-        let textpixlen
-        let texttoprint
-        textwidth = ctx.measureText(temptext).width
-        while (textwidth > linelen) {
-          textlen = 0
-          textpixlen = 0
-          texttoprint = ''
-          while (textpixlen < linelen) {
-            textlen++
-            texttoprint = temptext.substr(0, textlen)
-            textpixlen = ctx.measureText(texttoprint).width
-          }
-          // Remove last character that was out of the box
-          textlen--
-          texttoprint = texttoprint.substr(0, textlen)
-          //if statement ensures a new line only happens at a space, and not amidst a word
-          const backup = textlen
-          if (temptext.substr(textlen, 1) != ' ') {
-            while (temptext.substr(textlen, 1) != ' ' && textlen != 0) {
-              textlen--
-            }
-            if (textlen == 0) {
-              textlen = backup
-            }
-            texttoprint = temptext.substr(0, textlen)
-          }
-
-          texttoprint = this.justify
-            ? this.justifyLine(ctx, texttoprint, spaceWidth, SPACE, width)
-            : texttoprint
-
-          temptext = temptext.substr(textlen)
-          textwidth = ctx.measureText(temptext).width
-          textarray.push(texttoprint)
-        }
-        if (textwidth > 0) {
-          textarray.push(temptext)
-        }
-      }
-      // end foreach temptextarray
-    })
-    const charHeight = this.lineHeight
-      ? this.lineHeight
-      : this.getTextHeight(ctx, mytext, style) //close approximation of height with width
-    const vheight = charHeight * (textarray.length - 1)
-    const negoffset = vheight / 2
-
-    let debugY = y
-    // Vertical Align
-    if (this.vAlign === 'top') {
-      txtY = y + this.fontSize
-    } else if (this.vAlign === 'bottom') {
-      txtY = yEnd - vheight
-      debugY = yEnd
-    } else {
-      //defaults to center
-      debugY = y + height / 2
-      txtY -= negoffset
-    }
-    //print all lines of text
-    textarray.forEach((txtline) => {
-      txtline = txtline.trim()
-      ctx.fillText(txtline, textanchor, txtY)
-      txtY += charHeight
-    })
-
-    if (this.debug) {
-      // Text box
-      ctx.lineWidth = 3
-      ctx.strokeStyle = '#00909e'
-      ctx.strokeRect(x, y, width, height)
-
-      ctx.lineWidth = 2
-      // Horizontal Center
-      ctx.strokeStyle = '#f6d743'
-      ctx.beginPath()
-      ctx.moveTo(textanchor, y)
-      ctx.lineTo(textanchor, yEnd)
-      ctx.stroke()
-      // Vertical Center
-      ctx.strokeStyle = '#ff6363'
-      ctx.beginPath()
-      ctx.moveTo(x, debugY)
-      ctx.lineTo(xEnd, debugY)
-      ctx.stroke()
-    }
-
-    const TEXT_HEIGHT = vheight + charHeight
-
-    return { height: TEXT_HEIGHT }
-  },
-  // Calculate Height of the font
-  getTextHeight: function (
-    ctx: CanvasRenderingContext2D,
-    text: string,
-    style: string
-  ) {
-    const previousTextBaseline = ctx.textBaseline
-    const previousFont = ctx.font
-
-    ctx.textBaseline = 'bottom'
-    ctx.font = style
-    const { actualBoundingBoxAscent: height } = ctx.measureText(text)
-
-    // Reset baseline
-    ctx.textBaseline = previousTextBaseline
-    ctx.font = previousFont
-
-    return height
-  },
-  /**
-   * This function will insert spaces between words in a line in order
-   * to raise the line width to the box width.
-   * The spaces are evenly spread in the line, and extra spaces (if any) are inserted
-   * between the first words.
-   *
-   * It returns the justified text.
-   *
-   * @param {CanvasRenderingContext2D} ctx
-   * @param {string} line
-   * @param {number} spaceWidth
-   * @param {string} spaceChar
-   * @param {number} width
-   */
-  justifyLine: function (
-    ctx: CanvasRenderingContext2D,
-    line: string,
-    spaceWidth: number,
-    spaceChar: string,
-    width: number
-  ) {
-    const text = line.trim()
-
-    const lineWidth = ctx.measureText(text).width
-
-    const nbSpaces = text.split(/\s+/).length - 1
-    const nbSpacesToInsert = Math.floor((width - lineWidth) / spaceWidth)
-
-    if (nbSpaces <= 0 || nbSpacesToInsert <= 0) return text
-
-    // We insert at least nbSpacesMinimum and we add extraSpaces to the first words
-    const nbSpacesMinimum = Math.floor(nbSpacesToInsert / nbSpaces)
-    let extraSpaces = nbSpacesToInsert - nbSpaces * nbSpacesMinimum
-
-    let spaces: any[] | string = []
-    for (let i = 0; i < nbSpacesMinimum; i++) {
-      spaces.push(spaceChar)
-    }
-    spaces = spaces.join('')
-
-    const justifiedText = text.replace(/\s+/g, (match) => {
-      const allSpaces = extraSpaces > 0 ? spaces + spaceChar : spaces
-      extraSpaces--
-      return match + allSpaces
-    })
-
-    return justifiedText
-  },
 }
 
-export default canvasTxt
+function drawText(
+  ctx: CanvasRenderingContext2D,
+  myText: string,
+  inputConfig: CanvasTextConfig
+) {
+  const { width, height, x, y } = inputConfig
+  const config = { ...defaultConfig, ...inputConfig }
+
+  console.log('drawText', config)
+
+  if (width <= 0 || height <= 0 || config.fontSize <= 0) {
+    //width or height or font size cannot be 0
+    return { height: 0 }
+  }
+
+  // End points
+  const xEnd = x + width
+  const yEnd = y + height
+
+  const { fontStyle, fontVariant, fontWeight, fontSize, font } = config
+  const style = `${fontStyle} ${fontVariant} ${fontWeight} ${fontSize}px ${font}`
+  ctx.font = style
+
+  let txtY = y + height / 2 + config.fontSize / 2
+
+  let textAnchor: number
+
+  if (config.align === 'right') {
+    textAnchor = xEnd
+    ctx.textAlign = 'right'
+  } else if (config.align === 'left') {
+    textAnchor = x
+    ctx.textAlign = 'left'
+  } else {
+    textAnchor = x + width / 2
+    ctx.textAlign = 'center'
+  }
+
+  const textArray = splitText({
+    ctx,
+    text: myText,
+    justify: config.justify,
+    width,
+  })
+
+  const charHeight = config.lineHeight
+    ? config.lineHeight
+    : getTextHeight({ ctx, text: 'M', style })
+  const vHeight = charHeight * (textArray.length - 1)
+  const negOffset = vHeight / 2
+
+  let debugY = y
+  // Vertical Align
+  if (config.vAlign === 'top') {
+    ctx.textBaseline = 'top'
+    txtY = y
+  } else if (config.vAlign === 'bottom') {
+    ctx.textBaseline = 'bottom'
+    txtY = yEnd - vHeight
+    debugY = yEnd
+  } else {
+    //defaults to center
+    ctx.textBaseline = 'bottom'
+    debugY = y + height / 2
+    txtY -= negOffset
+  }
+  //print all lines of text
+  textArray.forEach((txtline) => {
+    txtline = txtline.trim()
+    ctx.fillText(txtline, textAnchor, txtY)
+    txtY += charHeight
+  })
+
+  if (config.debug) {
+    // Text box
+    ctx.lineWidth = 1
+    ctx.strokeStyle = '#0C8CE9'
+    ctx.strokeRect(x, y, width, height)
+
+    ctx.lineWidth = 1
+    // Horizontal Center
+    ctx.strokeStyle = '#0C8CE9'
+    ctx.beginPath()
+    ctx.moveTo(textAnchor, y)
+    ctx.lineTo(textAnchor, yEnd)
+    ctx.stroke()
+    // Vertical Center
+    ctx.strokeStyle = '#0C8CE9'
+    ctx.beginPath()
+    ctx.moveTo(x, debugY)
+    ctx.lineTo(xEnd, debugY)
+    ctx.stroke()
+  }
+
+  const TEXT_HEIGHT = vHeight + charHeight
+
+  return { height: TEXT_HEIGHT }
+}
+
+export { drawText, splitText, getTextHeight }

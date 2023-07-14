@@ -47,20 +47,21 @@ export default function splitText({
           : ctx.measureText(singleLine.substring(0, splitPoint)).width
 
       // if (splitPointWidth === width) Nailed
-
       if (splitPointWidth < width) {
         while (splitPointWidth < width && splitPoint < singleLineLength) {
           splitPoint++
           splitPointWidth = ctx.measureText(
             tempLine.substring(0, splitPoint)
           ).width
+          if (splitPoint === singleLineLength) break
         }
       } else if (splitPointWidth > width) {
         while (splitPointWidth > width) {
-          splitPoint--
+          splitPoint = Math.max(1, splitPoint - 1)
           splitPointWidth = ctx.measureText(
             tempLine.substring(0, splitPoint)
           ).width
+          if (splitPoint === 0 || splitPoint === 1) break
         }
       }
 
@@ -72,21 +73,26 @@ export default function splitText({
       splitPoint--
 
       // Ensures a new line only happens at a space, and not amidst a word
-      let tempSplitPoint = splitPoint
-      if (tempLine.substring(tempSplitPoint, tempSplitPoint + 1) != ' ') {
-        while (
-          tempLine.substring(tempSplitPoint, tempSplitPoint + 1) != ' ' &&
-          tempSplitPoint != 0
-        ) {
-          tempSplitPoint--
-        }
-        if (tempSplitPoint !== 0) {
-          splitPoint = tempSplitPoint
+      if (splitPoint > 0) {
+        let tempSplitPoint = splitPoint
+        if (tempLine.substring(tempSplitPoint, tempSplitPoint + 1) != ' ') {
+          while (
+            tempLine.substring(tempSplitPoint, tempSplitPoint + 1) != ' ' &&
+            tempSplitPoint >= 0
+          ) {
+            tempSplitPoint--
+          }
+          if (tempSplitPoint > 0) {
+            splitPoint = tempSplitPoint
+          }
         }
       }
 
+      if (splitPoint === 0) {
+        splitPoint = 1
+      }
+
       // Finally sets text to print
-      // textToPrint = singleLine.substring(0, splitPoint)
       textToPrint = tempLine.substring(0, splitPoint)
 
       textToPrint = justify
@@ -117,6 +123,5 @@ export default function splitText({
       textArray.push(textToPrint)
     }
   }
-  console.log('textArray', textArray)
   return textArray
 }

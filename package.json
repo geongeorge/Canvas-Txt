@@ -12,12 +12,12 @@
     "build:docs": "tsc && vite build --config config/vite.config.docs.ts",
     "prepare": "yarn build"
   },
-  "main": "./dist/canvas-txt.umd.cjs",
+  "main": "./dist/canvas-txt.umd.js",
   "module": "./dist/canvas-txt.js",
   "exports": {
     ".": {
       "import": "./dist/canvas-txt.js",
-      "require": "./dist/canvas-txt.umd.cjs"
+      "require": "./dist/canvas-txt.umd.js"
     }
   },
   "repository": {

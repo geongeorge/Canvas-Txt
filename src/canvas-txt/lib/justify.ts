@@ -23,23 +23,22 @@ export default function justifyLine({
 }: Props) {
   const text = line.trim()
   const words = text.split(/\s+/)
-  const noOfWords = words.length - 1
+  const numOfWords = words.length - 1
 
-  if (noOfWords === 0) return text
+  if (numOfWords === 0) return text
 
   // Width without spaces
   const lineWidth = ctx.measureText(words.join('')).width
 
   const noOfSpacesToInsert = (width - lineWidth) / spaceWidth
-  const spacesPerWord = Math.floor(noOfSpacesToInsert / noOfWords)
+  const spacesPerWord = Math.floor(noOfSpacesToInsert / numOfWords)
 
   if (noOfSpacesToInsert < 1) return text
 
-  console.log('noOfSpacesToInsert', noOfSpacesToInsert, noOfWords)
+  console.log('noOfSpacesToInsert', noOfSpacesToInsert, numOfWords)
 
   const spaces = spaceChar.repeat(spacesPerWord)
 
-  const justifiedText = words.join(spaces)
-
-  return justifiedText
+  // Return justified text
+  return words.join(spaces)
 }

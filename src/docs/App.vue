@@ -11,7 +11,7 @@ const year = new Date().getFullYear()
       <ElHeader class="container">
         <h1>Canvas-Txt: Text on HTML5 Canvas</h1>
         <p>
-          A tiny, zero external dependancy library that makes it easier to
+          A tiny, zero external dependency library that makes it easier to
           render multiline text on HTML5 Canvas
         </p>
         <p>

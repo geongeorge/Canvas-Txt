@@ -35,8 +35,6 @@ export default function justifyLine({
 
   if (noOfSpacesToInsert < 1) return text
 
-  console.log('noOfSpacesToInsert', noOfSpacesToInsert, numOfWords)
-
   const spaces = spaceChar.repeat(spacesPerWord)
 
   // Return justified text

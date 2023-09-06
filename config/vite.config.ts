@@ -1,4 +1,5 @@
 import { defineConfig } from 'vite'
+import dts from 'vite-plugin-dts'
 
 export default defineConfig({
   root: 'src',
@@ -10,4 +11,5 @@ export default defineConfig({
       fileName: 'canvas-txt',
     },
   },
+  plugins: [dts()],
 })

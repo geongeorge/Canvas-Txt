@@ -1,4 +1,4 @@
-interface Props {
+export interface JustifyLineProps {
   ctx: CanvasRenderingContext2D
   line: string
   spaceWidth: number
@@ -20,7 +20,7 @@ export default function justifyLine({
   spaceWidth,
   spaceChar,
   width,
-}: Props) {
+}: JustifyLineProps) {
   const text = line.trim()
   const words = text.split(/\s+/)
   const numOfWords = words.length - 1

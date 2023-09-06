@@ -3,7 +3,7 @@ import justifyLine from './justify'
 // Hair space character for precise justification
 const SPACE = '\u{200a}'
 
-interface Props {
+export interface SplitTextProps {
   ctx: CanvasRenderingContext2D
   text: string
   justify: boolean
@@ -15,7 +15,7 @@ export default function splitText({
   text,
   justify,
   width,
-}: Props): string[] {
+}: SplitTextProps): string[] {
   const textMap = new Map<string, number>()
 
   const measureText = (text: string): number => {

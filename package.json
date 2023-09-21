@@ -8,7 +8,8 @@
   "scripts": {
     "dev": "vite serve --config config/vite.config.docs.ts",
     "dev:node": "vite-node  ./src/node-test.ts",
-    "build": "tsc && vite build --config config/vite.config.ts",
+    "build:vite": "tsc && vite build --emptyOutDir --config config/vite.config.ts",
+    "build": "tsup src/canvas-txt/index.ts --dts --legacy-output",
     "build:docs": "tsc && vite build --config config/vite.config.docs.ts",
     "prepare": "yarn build"
   },
@@ -44,6 +45,7 @@
     "canvas": "^2.11.2",
     "element-plus": "^2.2.12",
     "lodash": "^4.17.21",
+    "tsup": "^7.2.0",
     "typescript": "^4.7.4",
     "unplugin-auto-import": "^0.11.0",
     "unplugin-vue-components": "^0.22.0",

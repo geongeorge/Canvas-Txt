@@ -1,10 +1,14 @@
-interface Props {
+interface GetTextHeightProps {
   ctx: CanvasRenderingContext2D
   text: string
   style: string
 }
 
-export default function getTextHeight({ ctx, text, style }: Props) {
+export default function getTextHeight({
+  ctx,
+  text,
+  style,
+}: GetTextHeightProps) {
   const previousTextBaseline = ctx.textBaseline
   const previousFont = ctx.font
 

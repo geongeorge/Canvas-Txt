@@ -8,8 +8,8 @@
   "scripts": {
     "dev": "vite serve --config config/vite.config.docs.ts",
     "dev:node": "vite-node  ./src/node-test.ts",
-    "build:vite": "tsc && vite build --emptyOutDir --config config/vite.config.ts",
-    "build": "tsup src/canvas-txt/index.ts --dts --legacy-output",
+    "build": "tsc && vite build --emptyOutDir --config config/vite.config.ts && yarn build:dts",
+    "build:dts": "tsup src/canvas-txt/index.ts --dts-only && mv dist/index.d.ts dist/canvas-txt.d.ts",
     "build:docs": "tsc && vite build --config config/vite.config.docs.ts",
     "prepare": "yarn build"
   },

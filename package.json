@@ -19,7 +19,8 @@
   "exports": {
     ".": {
       "import": "./dist/canvas-txt.mjs",
-      "require": "./dist/canvas-txt.umd.js"
+      "require": "./dist/canvas-txt.umd.js",
+      "types": "./dist/canvas-txt.d.ts"
     }
   },
   "repository": {

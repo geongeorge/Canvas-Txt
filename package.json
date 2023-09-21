@@ -15,6 +15,7 @@
   },
   "main": "./dist/canvas-txt.umd.js",
   "module": "./dist/canvas-txt.mjs",
+  "types": "./dist/canvas-txt.d.ts",
   "exports": {
     ".": {
       "import": "./dist/canvas-txt.mjs",

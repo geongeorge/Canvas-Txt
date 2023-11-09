@@ -83,7 +83,10 @@ export default function splitText({
       if (splitPoint > 0) {
         let tempSplitPoint = splitPoint
         if (tempLine.substring(tempSplitPoint, tempSplitPoint + 1) != ' ') {
-          while (tempLine.substring(tempSplitPoint, tempSplitPoint + 1) != ' ') {
+          while (
+            tempLine.substring(tempSplitPoint, tempSplitPoint + 1) != ' ' &&
+            tempSplitPoint >= 0
+          ) {
             tempSplitPoint--
           }
           if (tempSplitPoint > 0) {

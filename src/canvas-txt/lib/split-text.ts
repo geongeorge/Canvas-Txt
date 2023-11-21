@@ -68,7 +68,7 @@ export default function splitText({
         while (splitPointWidth > width) {
           splitPoint = Math.max(1, splitPoint - 1)
           splitPointWidth = measureText(tempLine.substring(0, splitPoint))
-          if (splitPoint === 0 || splitPoint === 1) break
+          if (splitPoint === 1) break
         }
       }
 
@@ -83,10 +83,8 @@ export default function splitText({
       if (splitPoint > 0) {
         let tempSplitPoint = splitPoint
         if (tempLine.substring(tempSplitPoint, tempSplitPoint + 1) != ' ') {
-          while (
-            tempLine.substring(tempSplitPoint, tempSplitPoint + 1) != ' ' &&
-            tempSplitPoint >= 0
-          ) {
+          while (tempSplitPoint >= 0
+              && tempLine.substring(tempSplitPoint, tempSplitPoint + 1) != ' ') {
             tempSplitPoint--
           }
           if (tempSplitPoint > 0) {

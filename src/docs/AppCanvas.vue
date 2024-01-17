@@ -24,6 +24,7 @@ const initialConfig = {
   align: 'center',
   vAlign: 'middle',
   justify: false,
+  overflow: true,
   min: 0,
   max: 800,
 }
@@ -68,6 +69,7 @@ function renderText() {
     align: config.align as CanvasTextConfig['align'],
     vAlign: config.vAlign as CanvasTextConfig['vAlign'],
     justify: config.justify,
+    overflow: config.overflow,
   }
 
   const { height } = drawText(ctx, config.text, myConfig)
@@ -176,10 +178,13 @@ onMounted(() => {
         <br />
 
         <el-row>
-          <el-col :span="12">
+          <el-col :span="8">
             <el-checkbox v-model="config.justify" label="Justify Text" />
           </el-col>
-          <el-col :span="12">
+          <el-col :span="8">
+            <el-checkbox v-model="config.overflow" label="Text overflow" />
+          </el-col>
+          <el-col :span="8">
             <el-checkbox v-model="config.debug" label="Debug mode" />
           </el-col>
         </el-row>

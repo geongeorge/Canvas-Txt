@@ -16,6 +16,7 @@ export interface CanvasTextConfig {
   font?: string
   lineHeight?: number
   justify?: boolean
+  overflow?: boolean
 }
 
 const defaultConfig = {
@@ -29,6 +30,7 @@ const defaultConfig = {
   font: 'Arial',
   lineHeight: null,
   justify: false,
+  overflow: true,
 }
 
 function drawText(
@@ -95,12 +97,24 @@ function drawText(
     debugY = y + height / 2
     txtY -= negOffset
   }
+
+  ctx.save()
+
+  // clip the text to the width and height
+  if (!config.overflow) {
+    ctx.beginPath()
+    ctx.rect(x, y, width, height)
+    ctx.clip()
+  }
+
   //print all lines of text
   textArray.forEach((txtline) => {
     txtline = txtline.trim()
     ctx.fillText(txtline, textAnchor, txtY)
     txtY += charHeight
   })
+
+  ctx.restore()
 
   if (config.debug) {
     const debugColor = '#0C8CE9'

@@ -16,6 +16,7 @@ export interface CanvasTextConfig {
   font?: string
   lineHeight?: number
   justify?: boolean
+  overflow?: boolean
 }
 
 const defaultConfig = {
@@ -29,6 +30,7 @@ const defaultConfig = {
   font: 'Arial',
   lineHeight: null,
   justify: false,
+  overflow: true,
 }
 
 function drawText(
@@ -101,6 +103,14 @@ function drawText(
     ctx.fillText(txtline, textAnchor, txtY)
     txtY += charHeight
   })
+
+  // drawing a mask to make the overflow hidden
+  if (!config.overflow) {
+    ctx.globalCompositeOperation = 'destination-in'
+    ctx.fillRect(x, y, width, height)
+    // reset the composite operation after drawing the mask
+    ctx.globalCompositeOperation = 'source-over'
+  }
 
   if (config.debug) {
     const debugColor = '#0C8CE9'

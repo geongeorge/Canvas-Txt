@@ -97,6 +97,16 @@ function drawText(
     debugY = y + height / 2
     txtY -= negOffset
   }
+
+  ctx.save()
+
+  // clip the text to the width and height
+  if (!config.overflow) {
+    ctx.beginPath()
+    ctx.rect(x, y, width, height)
+    ctx.clip()
+  }
+
   //print all lines of text
   textArray.forEach((txtline) => {
     txtline = txtline.trim()
@@ -104,13 +114,7 @@ function drawText(
     txtY += charHeight
   })
 
-  // drawing a mask to make the overflow hidden
-  if (!config.overflow) {
-    ctx.globalCompositeOperation = 'destination-in'
-    ctx.fillRect(x, y, width, height)
-    // reset the composite operation after drawing the mask
-    ctx.globalCompositeOperation = 'source-over'
-  }
+  ctx.restore()
 
   if (config.debug) {
     const debugColor = '#0C8CE9'

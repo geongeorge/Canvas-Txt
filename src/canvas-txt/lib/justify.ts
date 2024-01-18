@@ -1,9 +1,58 @@
+import { isWhitespace } from "./is-whitespace"
+import { Word } from "./models"
+import { trimLine } from "./trim-line"
+
 export interface JustifyLineProps {
-  ctx: CanvasRenderingContext2D
-  line: string
+  measureLine: (words: Word[]) => number
+  line: Word[]
   spaceWidth: number
   spaceChar: string
   width: number
+}
+
+/**
+ * Extracts the __visible__ (i.e. non-whitespace) words from a line.
+ * @param line
+ * @returns New array with only non-whitespace words.
+ */
+const extractWords = function(line: Word[]) {
+  return line.filter((word) => !isWhitespace(word.text))
+}
+
+/**
+ * Deep-clones a Word.
+ * @param word
+ * @returns Deep-cloned Word.
+ */
+const cloneWord = function(word: Word) {
+  const clone = { ...word }
+  if (word.format) {
+    clone.format = { ...word.format }
+  }
+  return clone
+}
+
+/**
+ * Joins Words together using another set of Words.
+ * @param words Words to join.
+ * @param joiner Words to use when joining `words`. These will be deep-cloned and inserted
+ *  in between every word in `words`, similar to `Array.join(string)` where the `string`
+ *  is inserted in between every element.
+ * @returns New array of Words. Empty if `words` is empty. New array of one Word if `words`
+ *  contains only one Word.
+ */
+const joinWords = function(words: Word[], joiner: Word[]) {
+  if (words.length <= 1 || joiner.length < 1) {
+    return [...words]
+  }
+
+  const phrase: Word[] = []
+  words.forEach((word) => {
+    phrase.push(word)
+    joiner.forEach((jw) => (phrase.push(cloneWord(jw))))
+  })
+
+  return phrase
 }
 
 /**
@@ -14,29 +63,29 @@ export interface JustifyLineProps {
  *
  * It returns the justified text.
  */
-export default function justifyLine({
-  ctx,
+export function justifyLine({
+  measureLine,
   line,
   spaceWidth,
   spaceChar,
   width,
 }: JustifyLineProps) {
-  const text = line.trim()
-  const words = text.split(/\s+/)
+  const trimmedLine = trimLine(line)
+  const words = extractWords(trimmedLine)
   const numOfWords = words.length - 1
 
-  if (numOfWords === 0) return text
+  if (numOfWords <= 0) return trimmedLine
 
-  // Width without spaces
-  const lineWidth = ctx.measureText(words.join('')).width
+  // Width without whitespace
+  const lineWidth = measureLine(words)
 
   const noOfSpacesToInsert = (width - lineWidth) / spaceWidth
   const spacesPerWord = Math.floor(noOfSpacesToInsert / numOfWords)
 
-  if (noOfSpacesToInsert < 1) return text
+  if (noOfSpacesToInsert < 1) return trimmedLine
 
-  const spaces = spaceChar.repeat(spacesPerWord)
+  const spaces: Word[] = Array.from({ length: spacesPerWord }, () => ({ text: spaceChar }))
 
   // Return justified text
-  return words.join(spaces)
+  return joinWords(words, spaces)
 }

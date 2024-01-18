@@ -20,7 +20,7 @@ const initialConfig = {
     size: 38,
     lineHeight: null,
   },
-  debug: false,
+  debug: true, // DEBUG
   align: 'center',
   vAlign: 'middle',
   justify: false,

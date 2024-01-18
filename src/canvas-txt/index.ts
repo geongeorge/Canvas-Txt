@@ -1,58 +1,48 @@
-import splitText from './lib/split-text'
-import getTextHeight from './lib/text-height'
+import { splitWords, splitText } from './lib/split-text'
+import { getTextHeight } from './lib/text-height'
+import { DEFAULT_FONT_FAMILY, DEFAULT_FONT_SIZE, getStyle } from './lib/get-style'
+import { CanvasTextConfig, Text } from './lib/models'
 
-export interface CanvasTextConfig {
-  width: number
-  height: number
-  x: number
-  y: number
-  debug?: boolean
-  align?: 'left' | 'center' | 'right'
-  vAlign?: 'top' | 'middle' | 'bottom'
-  fontSize?: number
-  fontWeight?: string
-  fontStyle?: string
-  fontVariant?: string
-  font?: string
-  lineHeight?: number
-  justify?: boolean
-}
-
-const defaultConfig = {
+const defaultConfig: Omit<CanvasTextConfig, 'x' | 'y' | 'width' | 'height'> = {
   debug: false,
   align: 'center',
   vAlign: 'middle',
-  fontSize: 14,
+  fontSize: DEFAULT_FONT_SIZE,
   fontWeight: '',
   fontStyle: '',
   fontVariant: '',
-  font: 'Arial',
-  lineHeight: null,
+  font: DEFAULT_FONT_FAMILY,
   justify: false,
 }
 
 function drawText(
   ctx: CanvasRenderingContext2D,
-  myText: string,
+  myText: Text,
   inputConfig: CanvasTextConfig
 ) {
+  if (Array.isArray(myText)) {
+    throw new Error('Word[] support not yet implemented')
+  }
+
   const { width, height, x, y } = inputConfig
   const config = { ...defaultConfig, ...inputConfig }
+  const ctxFontSize = config.fontSize ?? DEFAULT_FONT_SIZE
 
-  if (width <= 0 || height <= 0 || config.fontSize <= 0) {
-    //width or height or font size cannot be 0
+  if (width <= 0 || height <= 0 || ctxFontSize <= 0) {
+    // width or height or font size cannot be 0
     return { height: 0 }
   }
+
+  ctx.save()
 
   // End points
   const xEnd = x + width
   const yEnd = y + height
 
-  const { fontStyle, fontVariant, fontWeight, fontSize, font } = config
-  const style = `${fontStyle} ${fontVariant} ${fontWeight} ${fontSize}px ${font}`
+  const style = getStyle(config)
   ctx.font = style
 
-  let txtY = y + height / 2 + config.fontSize / 2
+  let txtY = y + height / 2 + ctxFontSize / 2
 
   let textAnchor: number
 
@@ -67,17 +57,25 @@ function drawText(
     ctx.textAlign = 'center'
   }
 
-  const textArray = splitText({
-    ctx,
-    text: myText,
-    justify: config.justify,
-    width,
-  })
-
   const charHeight = config.lineHeight
     ? config.lineHeight
     : getTextHeight({ ctx, text: 'M', style })
-  const vHeight = charHeight * (textArray.length - 1)
+
+  // DEBUG TODO: this is really ugly, could be more elegant; just a POC...
+  const textArray = Array.isArray(myText) ? undefined : splitText({
+    ctx,
+    text: myText,
+    justify: !!config.justify,
+    width,
+  })
+  const richArray = Array.isArray(myText) ? splitWords({
+    ctx,
+    words: myText,
+    justify: !!config.justify,
+    width,
+  }) : undefined;
+
+  const vHeight = charHeight * (textArray ? textArray.length - 1 : richArray?.lines.length - 1)
   const negOffset = vHeight / 2
 
   let debugY = y
@@ -95,12 +93,17 @@ function drawText(
     debugY = y + height / 2
     txtY -= negOffset
   }
-  //print all lines of text
-  textArray.forEach((txtline) => {
-    txtline = txtline.trim()
-    ctx.fillText(txtline, textAnchor, txtY)
-    txtY += charHeight
-  })
+
+  if (textArray) {
+    // print all lines of text
+    textArray.forEach((txtline) => {
+      txtline = txtline.trim()
+      ctx.fillText(txtline, textAnchor, txtY)
+      txtY += charHeight
+    })
+  } else {
+    // DEBUG TODO: render richArray...
+  }
 
   if (config.debug) {
     const debugColor = '#0C8CE9'
@@ -126,7 +129,10 @@ function drawText(
   }
 
   const textHeight = vHeight + charHeight
+
+  ctx.restore()
+
   return { height: textHeight }
 }
 
-export { drawText, splitText, getTextHeight }
+export { drawText, splitText, splitWords, getTextHeight }

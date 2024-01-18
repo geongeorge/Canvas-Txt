@@ -1,10 +1,12 @@
 interface GetTextHeightProps {
   ctx: CanvasRenderingContext2D
   text: string
+
+  /** CSS font. Same syntax as CSS font specifier.  */
   style: string
 }
 
-export default function getTextHeight({
+export function getTextHeight({
   ctx,
   text,
   style,

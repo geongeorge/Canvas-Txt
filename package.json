@@ -44,7 +44,6 @@
   "devDependencies": {
     "@types/lodash": "^4.14.182",
     "@vitejs/plugin-vue": "^3.0.1",
-    "canvas": "^2.11.2",
     "element-plus": "^2.2.12",
     "lodash": "^4.17.21",
     "tsup": "^7.2.0",

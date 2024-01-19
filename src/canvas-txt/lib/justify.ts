@@ -47,14 +47,21 @@ const joinWords = function(words: Word[], joiner: Word[]) {
   }
 
   const phrase: Word[] = []
-  words.forEach((word) => {
+  words.forEach((word, wordIdx) => {
     phrase.push(word)
-    joiner.forEach((jw) => (phrase.push(cloneWord(jw))))
+    if (wordIdx < words.length - 1) { // don't append after last `word`
+      joiner.forEach((jw) => (phrase.push(cloneWord(jw))))
+    }
   })
 
   return phrase
 }
 
+// DEBUG TODO: This isn't the greatest "justify" algorithm because it's not able to take
+//  the whole text into account and make smarter splits in order to spread words among lines
+//  in a better way; all it sees is one line, and it relies on splitWords() to decide which
+//  words go on which line, and splitWords() isn't taking justification into account. This
+//  algorithm will justify the line, but not the text as a whole...
 /**
  * This function will insert spaces between words in a line in order
  * to raise the line width to the box width.
@@ -86,6 +93,5 @@ export function justifyLine({
 
   const spaces: Word[] = Array.from({ length: spacesPerWord }, () => ({ text: spaceChar }))
 
-  // Return justified text
   return joinWords(words, spaces)
 }

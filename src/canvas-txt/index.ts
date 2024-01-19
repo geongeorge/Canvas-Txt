@@ -1,111 +1,77 @@
-import { splitWords, splitText } from './lib/split-text'
+import { splitWords, splitText, textToWords } from './lib/split-text'
 import { getTextHeight } from './lib/text-height'
-import { DEFAULT_FONT_FAMILY, DEFAULT_FONT_SIZE, getStyle } from './lib/get-style'
+import { getTextStyle, getTextFormat } from './lib/get-style'
 import { CanvasTextConfig, Text } from './lib/models'
-
-const defaultConfig: Omit<CanvasTextConfig, 'x' | 'y' | 'width' | 'height'> = {
-  debug: false,
-  align: 'center',
-  vAlign: 'middle',
-  fontSize: DEFAULT_FONT_SIZE,
-  fontWeight: '',
-  fontStyle: '',
-  fontVariant: '',
-  font: DEFAULT_FONT_FAMILY,
-  justify: false,
-}
 
 function drawText(
   ctx: CanvasRenderingContext2D,
-  myText: Text,
-  inputConfig: CanvasTextConfig
+  text: Text,
+  config: CanvasTextConfig
 ) {
-  if (Array.isArray(myText)) {
-    throw new Error('Word[] support not yet implemented')
-  }
+  const format = getTextFormat({
+    fontFamily: config.fontFamily,
+    fontSize: config.fontSize,
+    fontStyle: config.fontStyle,
+    fontVariant: config.fontVariant,
+    fontWeight: config.fontWeight,
+  })
 
-  const { width, height, x, y } = inputConfig
-  const config = { ...defaultConfig, ...inputConfig }
-  const ctxFontSize = config.fontSize ?? DEFAULT_FONT_SIZE
-
-  if (width <= 0 || height <= 0 || ctxFontSize <= 0) {
-    // width or height or font size cannot be 0
-    return { height: 0 }
-  }
+  const { lines: richLines, height: totalHeight, textBaseline, textAlign } = splitWords({
+    ctx,
+    words: Array.isArray(text) ? text : textToWords(text),
+    inferWhitespace: config.inferWhitespace,
+    x: config.x,
+    y: config.y,
+    width: config.width,
+    height: config.height,
+    align: config.align,
+    vAlign: config.vAlign,
+    justify: config.justify,
+    lineHeight: config.lineHeight,
+    format,
+  });
 
   ctx.save()
+  ctx.textAlign = textAlign
+  ctx.textBaseline = textBaseline
+  ctx.font = getTextStyle(format)
 
-  // End points
-  const xEnd = x + width
-  const yEnd = y + height
-
-  const style = getStyle(config)
-  ctx.font = style
-
-  let txtY = y + height / 2 + ctxFontSize / 2
-
-  let textAnchor: number
-
-  if (config.align === 'right') {
-    textAnchor = xEnd
-    ctx.textAlign = 'right'
-  } else if (config.align === 'left') {
-    textAnchor = x
-    ctx.textAlign = 'left'
-  } else {
-    textAnchor = x + width / 2
-    ctx.textAlign = 'center'
-  }
-
-  const charHeight = config.lineHeight
-    ? config.lineHeight
-    : getTextHeight({ ctx, text: 'M', style })
-
-  // DEBUG TODO: this is really ugly, could be more elegant; just a POC...
-  const textArray = Array.isArray(myText) ? undefined : splitText({
-    ctx,
-    text: myText,
-    justify: !!config.justify,
-    width,
-  })
-  const richArray = Array.isArray(myText) ? splitWords({
-    ctx,
-    words: myText,
-    justify: !!config.justify,
-    width,
-  }) : undefined;
-
-  const vHeight = charHeight * (textArray ? textArray.length - 1 : richArray?.lines.length - 1)
-  const negOffset = vHeight / 2
-
-  let debugY = y
-  // Vertical Align
-  if (config.vAlign === 'top') {
-    ctx.textBaseline = 'top'
-    txtY = y
-  } else if (config.vAlign === 'bottom') {
-    ctx.textBaseline = 'bottom'
-    txtY = yEnd - vHeight
-    debugY = yEnd
-  } else {
-    //defaults to center
-    ctx.textBaseline = 'bottom'
-    debugY = y + height / 2
-    txtY -= negOffset
-  }
-
-  if (textArray) {
-    // print all lines of text
-    textArray.forEach((txtline) => {
-      txtline = txtline.trim()
-      ctx.fillText(txtline, textAnchor, txtY)
-      txtY += charHeight
+  richLines.forEach((line) => {
+    line.forEach((pw) => {
+      if (!pw.isWhitespace) {
+        if (pw.word.format) {
+          ctx.save()
+          ctx.font = getTextStyle(pw.word.format)
+        }
+        ctx.fillText(pw.word.text, pw.x, pw.y)
+        if (pw.word.format) {
+          ctx.restore()
+        }
+      }
     })
-  } else {
-    // DEBUG TODO: render richArray...
-  }
+  })
 
   if (config.debug) {
+    const { width, height, x, y } = config
+    const xEnd = x + width
+    const yEnd = y + height
+
+    let textAnchor: number
+    if (config.align === 'right') {
+      textAnchor = xEnd
+    } else if (config.align === 'left') {
+      textAnchor = x
+    } else {
+      textAnchor = x + width / 2
+    }
+
+    let debugY = y
+    if (config.vAlign === 'bottom') {
+      debugY = yEnd
+    } else if (config.vAlign === 'middle') {
+      debugY = y + height / 2
+    }
+
     const debugColor = '#0C8CE9'
 
     // Text box
@@ -114,25 +80,29 @@ function drawText(
     ctx.strokeRect(x, y, width, height)
 
     ctx.lineWidth = 1
-    // Horizontal Center
-    ctx.strokeStyle = debugColor
-    ctx.beginPath()
-    ctx.moveTo(textAnchor, y)
-    ctx.lineTo(textAnchor, yEnd)
-    ctx.stroke()
-    // Vertical Center
-    ctx.strokeStyle = debugColor
-    ctx.beginPath()
-    ctx.moveTo(x, debugY)
-    ctx.lineTo(xEnd, debugY)
-    ctx.stroke()
-  }
 
-  const textHeight = vHeight + charHeight
+    if (!config.align || config.align === 'center') {
+      // Horizontal Center
+      ctx.strokeStyle = debugColor
+      ctx.beginPath()
+      ctx.moveTo(textAnchor, y)
+      ctx.lineTo(textAnchor, yEnd)
+      ctx.stroke()
+    }
+
+    if (!config.vAlign || config.vAlign === 'middle') {
+      // Vertical Center
+      ctx.strokeStyle = debugColor
+      ctx.beginPath()
+      ctx.moveTo(x, debugY)
+      ctx.lineTo(xEnd, debugY)
+      ctx.stroke()
+    }
+  }
 
   ctx.restore()
 
-  return { height: textHeight }
+  return { height: totalHeight }
 }
 
-export { drawText, splitText, splitWords, getTextHeight }
+export { drawText, splitText, splitWords, textToWords, getTextHeight }

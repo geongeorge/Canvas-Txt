@@ -59,8 +59,8 @@ function renderText() {
     y: config.pos.y,
     width: config.size.w,
     height: config.size.h,
-    font: "Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue'",
-    fontSize: 24,
+    fontFamily: 'Arial', // DEBUG "Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue'",
+    fontSize: 12, // DEBUG 24,
     fontWeight: '100',
     // fontStyle: 'oblique',
     // fontVariant: 'small-caps',
@@ -70,7 +70,23 @@ function renderText() {
     justify: config.justify,
   }
 
-  const { height } = drawText(ctx, config.text, myConfig)
+  // DEBUG keep only plain text for demo
+  const text = config.text
+  const richText = [
+    { text: 'Lorem' },
+    { text: 'ipsum', format: { fontStyle: 'italic' } },
+    { text: 'dolor' },
+    { text: 'sit' },
+    { text: 'amet,' },
+    { text: 'consectetur', format: { fontWeight: 'bold' } },
+    { text: 'adipiscing' },
+    { text: 'elit.' },
+    { text: 'Proin' },
+    { text: 'convallis' },
+    { text: 'eros.' },
+  ] && null
+
+  const { height } = drawText(ctx, richText || text, myConfig)
 
   console.log(`Total height = ${height}`)
 }

@@ -137,19 +137,19 @@ const { drawText, getTextHeight, splitText } = window.canvasTxt
 |    `font`     |   `Arial`    | Font family of the text                                                        |
 |  `fontSize`   |     `14`     | Font size of the text in px                                                    |
 |  `fontStyle`  |     `''`     | Font style, same as css font-style. Examples: `italic`, `oblique 40deg`        |
-| `fontVariant` |     `''`     | Font variant, same as css font-variant. Examples: `small-caps`, `slashed-zero` |
+| `fontVariant` |     `''`     | Font variant, same as css font-variant. Examples: `small-caps` |
 | `fontWeight`  |     `''`     | Font weight, same as css font-weight. Examples: `bold`, `100`                  |
-| `lineHeight`  |    `null`    | Line height of the text, if set to null it tries to auto-detect the value      |
 |   `justify`   |   `false`    | Justify text if `true`, it will insert spaces between words when necessary.    |
 
 ## Methods
 
 ```js
-import { drawText, splitText, getTextHeight } from 'canvas-txt'
+import { drawText, splitText, splitWords, textToWords, getTextHeight } from 'canvas-txt'
 ```
 
 | Method                                    | Description                                                                                                                                                                                                                     |
 | :---------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `// DEBUG TODO: update docs...`           |                                                                                                                                                                                                                                 |
 | `drawText(ctx,text, config)`              | To draw the text to the canvas                                                                                                                                                                                                  |
 | `splitText({ ctx, text, justify, width }` | To split the text `{ ctx: CanvasRenderingContext2D, text: string, justify: boolean, width: number }`                                                                                                                            |
 | `getTextHeight({ ctx, text, style })`     | To get the height of the text `{ ctx: CanvasRenderingContext2D, text: string, style: string (font style we pass to ctx.font) }` [ctx.font docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/font) |

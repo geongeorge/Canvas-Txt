@@ -1,8 +1,11 @@
 export interface TextFormat {
   /** Font family (CSS value). */
   fontFamily?: string
+
+  // DEBUG TODO: rendering words at different sizes doesn't render well per baseline
   /** Font size (px). */
   fontSize?: number
+
   /** Font weight (CSS value). */
   fontWeight?: string
   /** Font style (CSS value) */
@@ -13,8 +16,7 @@ export interface TextFormat {
   /** Font variant (CSS value). */
   fontVariant?: 'normal' | 'small-caps' | ''
 
-  // NOTE: line height is only supported at the context level (i.e. one line height for all
-  //  the text) even though Canvas2DContext.font supports it; see `CanvasTextConfig.lineHeight`
+  // NOTE: line height is not currently supported
 }
 
 export interface Word {
@@ -57,9 +59,6 @@ export interface CanvasTextConfig extends TextFormat {
   vAlign?: 'top' | 'middle' | 'bottom'
   /** True if text should be justified within the `boxWidth` to fill the hole width. */
   justify?: boolean
-
-  /** Desired line height when rendering text. Defaults to height based on font styles. */
-  lineHeight?: number
 
   /**
    * __NOTE:__ Applies only if `text`, given to `drawText()`, is a `Word[]`. Ignored if it's
@@ -106,9 +105,6 @@ export interface BaseSplitProps {
   /** True if text should be justified within the `boxWidth` to fill the hole width. */
   justify?: boolean
 
-  /** Desired line height when rendering text. Defaults to height based on font styles. */
-  lineHeight?: number
-
   /**
    * Base/default font styles. These will be used for any word that doesn't have specific
    *  formatting overrides. It's basically how "plain text" should be rendered.
@@ -139,7 +135,12 @@ export interface SplitWordsProps extends BaseSplitProps {
   inferWhitespace?: boolean
 }
 
-export type WordMap = Map<Word, TextMetrics>
+/**
+ * Maps a `Word` to its measured `metrics` and the font `format` used to measure it (if the
+ *  `Word` specified a format to use; undefined means the base formatting, as set on the canvas
+ *  2D context, was used).
+ */
+export type WordMap = Map<Word, { metrics: TextMetrics, format?: Required<TextFormat> }>
 
 export interface PositionWordsProps {
   /** Words organized/wrapped into lines to be rendered. */
@@ -173,6 +174,15 @@ export interface PositionWordsProps {
 export interface PositionedWord {
   /** Reference to a `Word` given to `splitWords()`. */
   word: Word
+
+  /**
+   * Full formatting used to measure/position the `word`, __if a `word.format` partial
+   *  was specified.__
+   *
+   * ❗️ __Use this for actual rendering__ instead of the original `word.format`.
+   */
+  format?: Required<TextFormat>
+
   /** X position (px) relative to render box within 2D context. */
   x: number
   /** Y position (px) relative to render box within 2D context. */
@@ -181,6 +191,7 @@ export interface PositionedWord {
   width: number
   /** Height (px) used to render text. */
   height: number
+
   /**
    * True if this `word` is non-visible whitespace (per a Regex `^\s+$` match) and so
    *  __could be skipped when rendering__.
@@ -194,14 +205,14 @@ export interface SplitWordsResults {
   /**
    * Baseline to use when rendering text based on alignment settings.
    *
-   * 💬 Set this on the 2D context __before__ rendering the Words in the `lines`.
+   * ❗️ Set this on the 2D context __before__ rendering the Words in the `lines`.
    */
   textBaseline: CanvasTextBaseline
 
   /**
    * Alignment to use when rendering text based on alignment settings.
    *
-   * 💬 Set this on the 2D context __before__ rendering the Words in the `lines`.
+   * ❗️ Set this on the 2D context __before__ rendering the Words in the `lines`.
    */
   textAlign: CanvasTextAlign
 

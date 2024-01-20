@@ -8,7 +8,7 @@ function drawText(
   text: Text,
   config: CanvasTextConfig
 ) {
-  const format = getTextFormat({
+  const baseFormat = getTextFormat({
     fontFamily: config.fontFamily,
     fontSize: config.fontSize,
     fontStyle: config.fontStyle,
@@ -27,24 +27,23 @@ function drawText(
     align: config.align,
     vAlign: config.vAlign,
     justify: config.justify,
-    lineHeight: config.lineHeight,
-    format,
+    format: baseFormat,
   });
 
   ctx.save()
   ctx.textAlign = textAlign
   ctx.textBaseline = textBaseline
-  ctx.font = getTextStyle(format)
+  ctx.font = getTextStyle(baseFormat)
 
   richLines.forEach((line) => {
     line.forEach((pw) => {
       if (!pw.isWhitespace) {
-        if (pw.word.format) {
+        if (pw.format) {
           ctx.save()
-          ctx.font = getTextStyle(pw.word.format)
+          ctx.font = getTextStyle(pw.format)
         }
         ctx.fillText(pw.word.text, pw.x, pw.y)
-        if (pw.word.format) {
+        if (pw.format) {
           ctx.restore()
         }
       }

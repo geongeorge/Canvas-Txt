@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { drawText, type CanvasTextConfig } from 'canvas-txt'
+import { drawText, type CanvasTextConfig, textToWords } from 'canvas-txt'
 import { ref, reactive, onMounted, watch } from 'vue'
 import type { Ref } from 'vue'
 import debounce from 'lodash/debounce'
@@ -16,11 +16,7 @@ const initialConfig = {
   text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin convallis eros.',
   pos: { x: 100, y: 150 },
   size: { w: 300, h: 200 },
-  font: {
-    size: 38,
-    lineHeight: null,
-  },
-  debug: true, // DEBUG
+  debug: false,
   align: 'center',
   vAlign: 'middle',
   justify: false,
@@ -59,8 +55,8 @@ function renderText() {
     y: config.pos.y,
     width: config.size.w,
     height: config.size.h,
-    fontFamily: 'Arial', // DEBUG "Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue'",
-    fontSize: 12, // DEBUG 24,
+    fontFamily: "Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue'",
+    fontSize: 24,
     fontWeight: '100',
     // fontStyle: 'oblique',
     // fontVariant: 'small-caps',
@@ -70,23 +66,17 @@ function renderText() {
     justify: config.justify,
   }
 
-  // DEBUG keep only plain text for demo
-  const text = config.text
-  const richText = [
-    { text: 'Lorem' },
-    { text: 'ipsum', format: { fontStyle: 'italic' } },
-    { text: 'dolor' },
-    { text: 'sit' },
-    { text: 'amet,' },
-    { text: 'consectetur', format: { fontWeight: 'bold' } },
-    { text: 'adipiscing' },
-    { text: 'elit.' },
-    { text: 'Proin' },
-    { text: 'convallis' },
-    { text: 'eros.' },
-  ] && null
+  const words = textToWords(config.text)
+  words.forEach((word) => {
+    if (word.text === 'ipsum') {
+      word.format = { fontStyle: 'italic' }
+    }
+    if (word.text === 'consectetur') {
+      word.format = { fontWeight: '400' }
+    }
+  })
 
-  const { height } = drawText(ctx, richText || text, myConfig)
+  const { height } = drawText(ctx, words, myConfig)
 
   console.log(`Total height = ${height}`)
 }

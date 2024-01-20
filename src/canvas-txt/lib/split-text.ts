@@ -85,16 +85,23 @@ const positionWords = function({
   const xEnd = boxX + boxWidth
   const yEnd = boxY + boxHeight
 
+  // NOTE: using __font__ ascent/descent to account for all possible characters in the font
+  //  so that lines with ascenders but no descenders, or vice versa, are all properly
+  //  aligned to the baseline, and so that lines aren't scrunched
+  // NOTE: even for middle vertical alignment, we want to use the __font__ ascent/descent
+  //  so that words, per line, are still aligned to the baseline (as much as possible; if
+  //  each word has a different font size, then things will still be offset, but for the
+  //  same font size, the baseline should match from left to right)
+  const getHeight = (metrics: TextMetrics): number =>
+    metrics.fontBoundingBoxAscent + metrics.fontBoundingBoxDescent
+
   // max height per line
   const lineHeights = wrappedLines.map(
     (line) =>
       line.reduce(
         (acc, word) => {
-          const metrics = wordMap.get(word)! // must exist as every `word` will have been measured
-          // NOTE: using __font__ ascent/descent to account for all possible characters in the font
-          //  so that lines with ascenders but no descenders, or vice versa, are all properly
-          //  aligned to the baseline, and so that lines aren't scrunched
-          return Math.max(acc, metrics.fontBoundingBoxAscent + metrics.fontBoundingBoxDescent)
+          const { metrics } = wordMap.get(word)! // must exist as every `word` MUST have been measured
+          return Math.max(acc, getHeight(metrics))
         },
         0
       )
@@ -117,7 +124,7 @@ const positionWords = function({
 
   const lines = wrappedLines.map((line, lineIdx): PositionedWord[] => {
     const lineWidth = line.reduce(
-      (acc, word) => acc + (wordMap.get(word)?.width ?? 0),
+      (acc, word) => acc + wordMap.get(word)!.metrics.width, // must exist as every `word` MUST have been measured
       0
     )
     const lineHeight = lineHeights[lineIdx]
@@ -134,14 +141,9 @@ const positionWords = function({
 
     let wordX = lineX
     const posWords = line.map((word): PositionedWord => {
-      const metrics = wordMap.get(word)! // must exist as every `word` will have been measured
+      const { metrics, format } = wordMap.get(word)! // must exist as every `word` MUST have been measured
       const x = wordX
-
-      // NOTE: even for middle vertical alignment, we want to use the __font__ ascent/descent
-      //  so that words, per line, are still aligned to the baseline (as much as possible; if
-      //  each word has a different font size, then things will still be offset, but for the
-      //  same font size, the baseline should match from left to right)
-      const height = metrics.fontBoundingBoxAscent + metrics.fontBoundingBoxDescent
+      const height = getHeight(metrics)
 
       // vertical alignment (defaults to middle)
       let y: number
@@ -156,6 +158,7 @@ const positionWords = function({
       wordX += metrics.width
       return {
         word,
+        format,
         x,
         y,
         width: metrics.width,
@@ -172,6 +175,12 @@ const positionWords = function({
     lines,
     textBaseline,
     textAlign: 'left', // always per current algorithm
+
+    // DEBUG TODO: `totalHeight` is actually ~5px MORE than it should be purely looking at pixels;
+    //  not sure why that is, other than the use of `fontBounding*` metrics to calculate word
+    //  heights, line heights, and ultimately this total height, which accounts for more than
+    //  purely rendered pixels, but is also necessary for proper positioning and avoiding
+    //  scrunching the text (e.g. if we were to use `actualBounding*` metrics instead
     height: totalHeight
   }
 }
@@ -205,16 +214,18 @@ export function splitWords({
     //  text and format, justification `HAIR` character, and there will be thousands,
     //  if not millions, for a really long text to render)
     if (wordMap.has(word)) {
-      return wordMap.get(word)!.width
+      return wordMap.get(word)!.metrics.width
     }
 
+    let format = undefined
     if (word.format) {
       ctx.save()
-      ctx.font = getTextStyle(getTextFormat(word.format, baseTextFormat))
+      format = getTextFormat(word.format, baseTextFormat)
+      ctx.font = getTextStyle(format)
     }
 
     const metrics = ctx.measureText(word.text)
-    wordMap.set(word, metrics)
+    wordMap.set(word, { metrics, format })
 
     if (word.format) {
       ctx.restore()
@@ -351,8 +362,6 @@ export function splitWords({
   const results = positionWords({
     wrappedLines,
     wordMap,
-    fontSize: baseTextFormat.fontSize,
-    ctx,
     positioning,
   })
 

@@ -13,13 +13,13 @@
     "build:docs": "tsc && vite build --config config/vite.config.docs.ts",
     "prepare": "yarn build"
   },
-  "main": "./dist/canvas-txt.umd.js",
-  "module": "./dist/canvas-txt.mjs",
+  "main": "./dist/canvas-txt.umd.min.js",
+  "module": "./dist/canvas-txt.esm.min.js",
   "types": "./dist/canvas-txt.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/canvas-txt.mjs",
-      "require": "./dist/canvas-txt.umd.js",
+      "import": "./dist/canvas-txt.esm.min.js",
+      "require": "./dist/canvas-txt.umd.min.js",
       "types": "./dist/canvas-txt.d.ts"
     }
   },
@@ -28,6 +28,9 @@
     "url": "https://github.com/geongeorge/Canvas-Txt"
   },
   "author": "Geon George <me@geongeorge.com> (https://geongeorge.com)",
+  "contributors": [
+    { "name": "Stefan Cameron", "email": "stefan@stefcameron.com" }
+  ],
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/geongeorge/Canvas-Txt/issues"

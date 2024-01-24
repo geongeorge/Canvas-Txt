@@ -1,5 +1,5 @@
 import { splitWords, splitText, textToWords } from './lib/split-text'
-import { getTextHeight } from './lib/text-height'
+import { getTextHeight, getWordHeight } from './lib/text-height'
 import { getTextStyle, getTextFormat } from './lib/get-style'
 import { CanvasTextConfig, Text } from './lib/models'
 
@@ -104,4 +104,14 @@ function drawText(
   return { height: totalHeight }
 }
 
-export { drawText, splitText, splitWords, textToWords, getTextHeight }
+export {
+  drawText,
+  splitText,
+  splitWords,
+  textToWords,
+  getTextHeight,
+  getWordHeight,
+  getTextStyle,
+  getTextFormat,
+}
+export * from './lib/models';

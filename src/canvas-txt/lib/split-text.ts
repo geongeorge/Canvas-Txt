@@ -6,7 +6,7 @@ import {
   PositionedWord,
   SplitTextProps,
   SplitWordsProps,
-  SplitWordsResults,
+  RenderSpecs,
   Word,
   WordMap
 } from './models'
@@ -17,6 +17,15 @@ const HAIR = '\u{200a}'
 
 // for when we're inferring whitespace between words
 const SPACE = ' '
+
+/**
+ * Generates a word hash for use as a key in a `WordMap`.
+ * @param word
+ * @returns Hash.
+ */
+const getWordHash = function(word: Word) {
+  return `${word.text}${word.format ? JSON.stringify(word.format) : ''}`
+}
 
 /**
  * Splits words into lines based on words that are single newline characters.
@@ -81,7 +90,7 @@ const positionWords = function({
     align,
     vAlign,
   }
-}: PositionWordsProps): SplitWordsResults {
+}: PositionWordsProps): RenderSpecs {
   const xEnd = boxX + boxWidth
   const yEnd = boxY + boxHeight
 
@@ -100,8 +109,9 @@ const positionWords = function({
     (line) =>
       line.reduce(
         (acc, word) => {
-          const { metrics } = wordMap.get(word)! // must exist as every `word` MUST have been measured
-          return Math.max(acc, getHeight(metrics))
+          // NOTE: `metrics` must exist as every `word` MUST have been measured at this point
+          const { metrics } = word
+          return Math.max(acc, getHeight(metrics!))
         },
         0
       )
@@ -124,7 +134,8 @@ const positionWords = function({
 
   const lines = wrappedLines.map((line, lineIdx): PositionedWord[] => {
     const lineWidth = line.reduce(
-      (acc, word) => acc + wordMap.get(word)!.metrics.width, // must exist as every `word` MUST have been measured
+      // NOTE: `metrics` must exist as every `word` MUST have been measured at this point
+      (acc, word) => acc + word.metrics!.width,
       0
     )
     const lineHeight = lineHeights[lineIdx]
@@ -141,9 +152,13 @@ const positionWords = function({
 
     let wordX = lineX
     const posWords = line.map((word): PositionedWord => {
-      const { metrics, format } = wordMap.get(word)! // must exist as every `word` MUST have been measured
+      // NOTE: `word.metrics` and `wordMap.get(hash)` must exist as every `word` MUST have
+      //  been measured at this point
+
+      const hash = getWordHash(word)
+      const { format } = wordMap.get(hash)!
       const x = wordX
-      const height = getHeight(metrics)
+      const height = getHeight(word.metrics!)
 
       // vertical alignment (defaults to middle)
       let y: number
@@ -155,13 +170,13 @@ const positionWords = function({
         y = lineY + (lineHeight - height) / 2
       }
 
-      wordX += metrics.width
+      wordX += word.metrics!.width
       return {
         word,
-        format,
+        format, // undefined IF base formatting should be used when rendering (i.e. `word.format` is undefined)
         x,
         y,
-        width: metrics.width,
+        width: word.metrics!.width,
         height,
         isWhitespace: isWhitespace(word.text)
       }
@@ -175,6 +190,7 @@ const positionWords = function({
     lines,
     textBaseline,
     textAlign: 'left', // always per current algorithm
+    width: boxWidth,
 
     // DEBUG TODO: `totalHeight` is actually ~5px MORE than it should be purely looking at pixels;
     //  not sure why that is, other than the use of `fontBounding*` metrics to calculate word
@@ -199,22 +215,35 @@ export function splitWords({
   format: baseFormat,
   inferWhitespace = true,
   ...positioning // rest of params are related to positioning
-}: SplitWordsProps): SplitWordsResults {
+}: SplitWordsProps): RenderSpecs {
   const wordMap: WordMap = new Map()
   const baseTextFormat = getTextFormat(baseFormat)
 
   //// text measurement
 
   const measureText = (word: Word): number => {
-    // DEBUG PERF: using the word as the key is very memory-intensive when justifying
-    //  text (and also for a really, really long piece of text to render where there's
-    //  a lot of repetitive whitespace, and probably repetitive words like 'the', etc);
-    //  we should cache metrics based on combination of `word.text` and `word.format`
-    //  instead of `word` (which will be different for every single, yet identical in
-    //  text and format, justification `HAIR` character, and there will be thousands,
-    //  if not millions, for a really long text to render)
-    if (wordMap.has(word)) {
-      return wordMap.get(word)!.metrics.width
+    const hash = getWordHash(word);
+
+    if (word.metrics) {
+      // assume Word's text and format haven't changed since last measurement and metrics are good
+
+      // make sure we have the metrics and full formatting cached for other identical Words
+      if (!wordMap.has(hash)) {
+        let format = undefined;
+        if (word.format) {
+          format = getTextFormat(word.format, baseTextFormat)
+        }
+        wordMap.set(hash, { metrics: word.metrics, format })
+      }
+
+      return word.metrics.width
+    }
+
+    // check to see if we have already measured an identical Word
+    if (wordMap.has(hash)) {
+      const { metrics } = wordMap.get(hash)!; // will be there because of `if(has())` check
+      word.metrics = metrics;
+      return metrics.width
     }
 
     let format = undefined
@@ -225,7 +254,8 @@ export function splitWords({
     }
 
     const metrics = ctx.measureText(word.text)
-    wordMap.set(word, { metrics, format })
+    word.metrics = metrics
+    wordMap.set(hash, { metrics, format })
 
     if (word.format) {
       ctx.restore()
@@ -251,7 +281,13 @@ export function splitWords({
     (baseFormat && typeof baseFormat.fontSize === 'number' && baseFormat.fontSize <= 0)
   ) {
     // width or height or font size cannot be 0, or there are no lines after trimming
-    return { lines: [], textAlign: 'center', textBaseline: 'middle', height: 0 }
+    return {
+      lines: [],
+      textAlign: 'center',
+      textBaseline: 'middle',
+      width: positioning.width,
+      height: 0
+    }
   }
 
   ctx.font = getTextStyle(baseTextFormat)

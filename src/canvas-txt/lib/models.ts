@@ -1,3 +1,5 @@
+export type CanvasRenderContext = CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D
+
 export interface TextFormat {
   /** Font family (CSS value). */
   fontFamily?: string
@@ -24,6 +26,20 @@ export interface Word {
   text: string
   /** Optional formatting. If unspecified, base format defaults will be used. */
   format?: TextFormat
+  /**
+   * Optional metrics for this Word if it has __already been measured__ on canvas.
+   *
+   * ❗️ This is an optimization to increase performance of subsequent splitting of words.
+   *  If specified, it's assumed that the `text` and `format` __have not changed__ since
+   *  the last time the word was measured. Also that other aspects of the canvas related
+   *  to rendering, such as aspect ratio, that could affect measurements __have not changed__.
+   *
+   * If not specified, this member __will be added__ by `splitWords()` once the word is measured
+   *  so that it's easy to feed the same word back into `splitWords()` at a later time if its
+   *  `text` and `format` remain the same. If they change, simply set this property to `undefined`
+   *  to force it to be re-measured.
+   */
+  metrics?: TextMetrics // NOTE: all property are flagged as `readonly` (good!)
 }
 
 export type PlainText = string;
@@ -77,7 +93,7 @@ export interface CanvasTextConfig extends TextFormat {
 }
 
 export interface BaseSplitProps {
-  ctx: CanvasRenderingContext2D
+  ctx: CanvasRenderContext
 
   /** Absolute X coordinate (px) in 2D context where text should be rendered. */
   x: number
@@ -135,12 +151,15 @@ export interface SplitWordsProps extends BaseSplitProps {
   inferWhitespace?: boolean
 }
 
+/** Hash representing a `Word` and its associated `TextFormat`. */
+export type WordHash = string;
+
 /**
  * Maps a `Word` to its measured `metrics` and the font `format` used to measure it (if the
  *  `Word` specified a format to use; undefined means the base formatting, as set on the canvas
  *  2D context, was used).
  */
-export type WordMap = Map<Word, { metrics: TextMetrics, format?: Required<TextFormat> }>
+export type WordMap = Map<WordHash, { metrics: TextMetrics, format?: Required<TextFormat> }>
 
 export interface PositionWordsProps {
   /** Words organized/wrapped into lines to be rendered. */
@@ -173,7 +192,7 @@ export interface PositionWordsProps {
  */
 export interface PositionedWord {
   /** Reference to a `Word` given to `splitWords()`. */
-  word: Word
+  readonly word: Word
 
   /**
    * Full formatting used to measure/position the `word`, __if a `word.format` partial
@@ -181,42 +200,52 @@ export interface PositionedWord {
    *
    * ❗️ __Use this for actual rendering__ instead of the original `word.format`.
    */
-  format?: Required<TextFormat>
+  readonly format?: Readonly<Required<TextFormat>>
 
   /** X position (px) relative to render box within 2D context. */
-  x: number
+  readonly x: number
   /** Y position (px) relative to render box within 2D context. */
-  y: number
+  readonly y: number
   /** Width (px) used to render text. */
-  width: number
+  readonly width: number
   /** Height (px) used to render text. */
-  height: number
+  readonly height: number
 
   /**
    * True if this `word` is non-visible whitespace (per a Regex `^\s+$` match) and so
    *  __could be skipped when rendering__.
    */
-  isWhitespace: boolean
+  readonly isWhitespace: boolean
 }
 
-export interface SplitWordsResults {
-  lines: PositionedWord[][]
+export interface RenderSpecs {
+  /**
+   * Words split into lines as they would be visually wrapped on canvas if rendered
+   *  to their prescribed positions.
+   */
+  readonly lines: PositionedWord[][]
 
   /**
    * Baseline to use when rendering text based on alignment settings.
    *
    * ❗️ Set this on the 2D context __before__ rendering the Words in the `lines`.
    */
-  textBaseline: CanvasTextBaseline
+  readonly textBaseline: CanvasTextBaseline
 
   /**
    * Alignment to use when rendering text based on alignment settings.
    *
    * ❗️ Set this on the 2D context __before__ rendering the Words in the `lines`.
    */
-  textAlign: CanvasTextAlign
+  readonly textAlign: CanvasTextAlign
+
+  /**
+   * Total required width (px) to render all the lines as wrapped (i.e. the original
+   *  `width` used to split the words.
+   */
+  readonly width: number
 
   /** Total required height (px) to render all lines. */
-  height: number
+  readonly height: number
 }
 

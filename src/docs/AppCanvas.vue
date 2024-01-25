@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { drawText, type CanvasTextConfig, textToWords } from 'canvas-txt'
+import { drawText, type CanvasTextConfig, type CanvasRenderContext, textToWords } from 'canvas-txt'
 import { ref, reactive, onMounted, watch } from 'vue'
 import type { Ref } from 'vue'
 import debounce from 'lodash/debounce'
 import cloneDeep from 'lodash/cloneDeep'
 
 const canvas: Ref<HTMLCanvasElement | null> = ref(null)
-const context: Ref<CanvasRenderingContext2D | null> = ref(null)
+const context: Ref<CanvasRenderContext | null> = ref(null)
 
 const renderTime = ref(0)
 

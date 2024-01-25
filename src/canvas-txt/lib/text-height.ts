@@ -1,13 +1,13 @@
 import { getTextStyle } from "./get-style"
-import { Word } from "./models"
+import { CanvasRenderContext, Word } from "./models"
 
 interface GetWordHeightProps {
-  ctx: CanvasRenderingContext2D
+  ctx: CanvasRenderContext
   word: Word
 }
 
 interface GetTextHeightProps {
-  ctx: CanvasRenderingContext2D
+  ctx: CanvasRenderContext
   text: string
 
   /**
@@ -17,7 +17,7 @@ interface GetTextHeightProps {
   style?: string
 }
 
-const getHeight = function(ctx: CanvasRenderingContext2D, text: string, style?: string) {
+const getHeight = function(ctx: CanvasRenderContext, text: string, style?: string) {
   const previousTextBaseline = ctx.textBaseline
   const previousFont = ctx.font
 

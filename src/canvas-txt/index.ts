@@ -1,10 +1,10 @@
 import { splitWords, splitText, textToWords } from './lib/split-text'
 import { getTextHeight, getWordHeight } from './lib/text-height'
 import { getTextStyle, getTextFormat } from './lib/get-style'
-import { CanvasTextConfig, Text } from './lib/models'
+import { CanvasRenderContext, CanvasTextConfig, Text } from './lib/models'
 
 function drawText(
-  ctx: CanvasRenderingContext2D,
+  ctx: CanvasRenderContext,
   text: Text,
   config: CanvasTextConfig
 ) {
@@ -38,6 +38,9 @@ function drawText(
   richLines.forEach((line) => {
     line.forEach((pw) => {
       if (!pw.isWhitespace) {
+        // NOTE: don't use the `pw.word.format` as this could be incomplete; use `pw.format`
+        //  if it exists as this will always be the __full__ TextFormat used to measure the
+        //  Word, and so should be what is used to render it
         if (pw.format) {
           ctx.save()
           ctx.font = getTextStyle(pw.format)

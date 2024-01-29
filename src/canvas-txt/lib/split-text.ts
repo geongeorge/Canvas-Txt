@@ -6,9 +6,10 @@ import {
   PositionedWord,
   SplitTextProps,
   SplitWordsProps,
-  RenderSpecs,
+  RenderSpec,
   Word,
-  WordMap
+  WordMap,
+  CanvasTextMetrics
 } from './models'
 import { trimLine } from './trim-line'
 
@@ -79,7 +80,7 @@ const splitIntoLines = function(words: Word[], inferWhitespace: boolean): Word[]
  * @param params
  * @returns Results to return via `splitWords()`
  */
-const positionWords = function({
+const generateSpec = function({
   wrappedLines,
   wordMap,
   positioning: {
@@ -90,7 +91,7 @@ const positionWords = function({
     align,
     vAlign,
   }
-}: PositionWordsProps): RenderSpecs {
+}: PositionWordsProps): RenderSpec {
   const xEnd = boxX + boxWidth
   const yEnd = boxY + boxHeight
 
@@ -101,7 +102,7 @@ const positionWords = function({
   //  so that words, per line, are still aligned to the baseline (as much as possible; if
   //  each word has a different font size, then things will still be offset, but for the
   //  same font size, the baseline should match from left to right)
-  const getHeight = (metrics: TextMetrics): number =>
+  const getHeight = (metrics: CanvasTextMetrics): number =>
     metrics.fontBoundingBoxAscent + metrics.fontBoundingBoxDescent
 
   // max height per line
@@ -202,6 +203,64 @@ const positionWords = function({
 }
 
 /**
+ * Serializes render specs to JSON for storage or for sending via `postMessage()`
+ *  between the main thread and a Web Worker thread.
+ *
+ * This is primarily to help with the fact that `postMessage()` fails if given a native
+ *  Canvas `TextMetrics` object to serialize somewhere in its `message` parameter.
+ *
+ * @param specs
+ * @returns Specs serialized as JSON.
+ */
+export function specToJson(specs: RenderSpec): string {
+  // CAREFUL: use a `function`, not an arrow function, as stringify() sets its context to
+  //  the object being serialized on each call to the replacer
+  return JSON.stringify(specs, function (key, value) {
+    if (key === 'metrics' && value && typeof value === 'object') {
+      // shallow-clone the object using its own-enumerable keys and let the stringify()
+      //  function serialize it (will call back into this replacer function for each property)
+      return Object.keys(value).reduce((acc: Record<string, any>, key) => {
+        acc[key] = value[key]
+        return acc
+      }, {})
+    }
+
+    return value
+  })
+}
+
+/**
+ * Serializes a list of Words to JSON for storage or for sending via `postMessage()`
+ *  between the main thread and a Web Worker thread.
+ *
+ * This is primarily to help with the fact that `postMessage()` fails if given a native
+ *  Canvas `TextMetrics` object to serialize somewhere in its `message` parameter.
+ *
+ * @param words
+ * @returns Words serialized as JSON.
+ */
+export function wordsToJson(words: Word[]): string {
+  // DEBUG TODO: this is the same replacer implementation as used in specsToJson(); we should
+  //  be able to declare the replacer once, but that requires specifying the `this` context to
+  //  be something other than `any` so that TSC doesn't complain; figure this out later
+
+  // CAREFUL: use a `function`, not an arrow function, as stringify() sets its context to
+  //  the object being serialized on each call to the replacer
+  return JSON.stringify(words, function (key, value) {
+    if (key === 'metrics' && value && typeof value === 'object') {
+      // shallow-clone the object using its own-enumerable keys and let the stringify()
+      //  function serialize it (will call back into this replacer function for each property)
+      return Object.keys(value).reduce((acc: Record<string, any>, key) => {
+        acc[key] = value[key]
+        return acc
+      }, {})
+    }
+
+    return value
+  })
+}
+
+/**
  * Splits Words into positioned lines of Words as they need to be rendred in 2D space,
  *  but does not render anything.
  * @param config
@@ -215,7 +274,7 @@ export function splitWords({
   format: baseFormat,
   inferWhitespace = true,
   ...positioning // rest of params are related to positioning
-}: SplitWordsProps): RenderSpecs {
+}: SplitWordsProps): RenderSpec {
   const wordMap: WordMap = new Map()
   const baseTextFormat = getTextFormat(baseFormat)
 
@@ -395,14 +454,14 @@ export function splitWords({
     }
   }
 
-  const results = positionWords({
+  const spec = generateSpec({
     wrappedLines,
     wordMap,
     positioning,
   })
 
   ctx.restore()
-  return results
+  return spec
 }
 
 /**

@@ -1,4 +1,4 @@
-import { splitWords, splitText, textToWords } from './lib/split-text'
+import { specToJson, splitWords, splitText, textToWords, wordsToJson } from './lib/split-text'
 import { getTextHeight, getWordHeight } from './lib/text-height'
 import { getTextStyle, getTextFormat } from './lib/get-style'
 import { CanvasRenderContext, CanvasTextConfig, Text } from './lib/models'
@@ -109,9 +109,11 @@ function drawText(
 
 export {
   drawText,
+  specToJson,
   splitText,
   splitWords,
   textToWords,
+  wordsToJson,
   getTextHeight,
   getWordHeight,
   getTextStyle,

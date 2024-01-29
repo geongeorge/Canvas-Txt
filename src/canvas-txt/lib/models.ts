@@ -39,7 +39,7 @@ export interface Word {
    *  `text` and `format` remain the same. If they change, simply set this property to `undefined`
    *  to force it to be re-measured.
    */
-  metrics?: TextMetrics // NOTE: all property are flagged as `readonly` (good!)
+  metrics?: CanvasTextMetrics // NOTE: all property are flagged as `readonly` (good!)
 }
 
 export type PlainText = string;
@@ -155,11 +155,25 @@ export interface SplitWordsProps extends BaseSplitProps {
 export type WordHash = string;
 
 /**
+ * Identifies the minimum Canvas `TextMetrics` properties required by Canvas-Txt. This is
+ *  important for serialization across the main thread to a Web Worker thread (or vice versa)
+ *  as the native `TextMetrics` object fails to get serialized by `Worker.postMessage()`,
+ *  causing an exception.
+ */
+export interface TextMetricsLike {
+  fontBoundingBoxAscent: number
+  fontBoundingBoxDescent: number
+  width: number
+}
+
+export type CanvasTextMetrics = TextMetrics | TextMetricsLike
+
+/**
  * Maps a `Word` to its measured `metrics` and the font `format` used to measure it (if the
  *  `Word` specified a format to use; undefined means the base formatting, as set on the canvas
  *  2D context, was used).
  */
-export type WordMap = Map<WordHash, { metrics: TextMetrics, format?: Required<TextFormat> }>
+export type WordMap = Map<WordHash, { metrics: CanvasTextMetrics, format?: Required<TextFormat> }>
 
 export interface PositionWordsProps {
   /** Words organized/wrapped into lines to be rendered. */
@@ -218,7 +232,7 @@ export interface PositionedWord {
   readonly isWhitespace: boolean
 }
 
-export interface RenderSpecs {
+export interface RenderSpec {
   /**
    * Words split into lines as they would be visually wrapped on canvas if rendered
    *  to their prescribed positions.

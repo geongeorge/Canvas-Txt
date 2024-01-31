@@ -217,12 +217,16 @@ export function specToJson(specs: RenderSpec): string {
   //  the object being serialized on each call to the replacer
   return JSON.stringify(specs, function (key, value) {
     if (key === 'metrics' && value && typeof value === 'object') {
-      // shallow-clone the object using its own-enumerable keys and let the stringify()
-      //  function serialize it (will call back into this replacer function for each property)
-      return Object.keys(value).reduce((acc: Record<string, any>, key) => {
-        acc[key] = value[key]
-        return acc
-      }, {})
+      // DEBUG TODO: need better typings here, if possible, so that TSC warns if we aren't
+      //  including a property we should be if a new one is needed in the future (i.e. if
+      //  a new property is added to the `TextMetricsLike` type)
+      // NOTE: TextMetrics objects don't have own-enumerable properties; they only have getters,
+      //  so we have to explicitly get the values we care about
+      return {
+        width: value.width,
+        fontBoundingBoxAscent: value.fontBoundingBoxAscent,
+        fontBoundingBoxDescent: value.fontBoundingBoxDescent,
+      } as CanvasTextMetrics;
     }
 
     return value
@@ -248,12 +252,16 @@ export function wordsToJson(words: Word[]): string {
   //  the object being serialized on each call to the replacer
   return JSON.stringify(words, function (key, value) {
     if (key === 'metrics' && value && typeof value === 'object') {
-      // shallow-clone the object using its own-enumerable keys and let the stringify()
-      //  function serialize it (will call back into this replacer function for each property)
-      return Object.keys(value).reduce((acc: Record<string, any>, key) => {
-        acc[key] = value[key]
-        return acc
-      }, {})
+      // DEBUG TODO: need better typings here, if possible, so that TSC warns if we aren't
+      //  including a property we should be if a new one is needed in the future (i.e. if
+      //  a new property is added to the `TextMetricsLike` type)
+      // NOTE: TextMetrics objects don't have own-enumerable properties; they only have getters,
+      //  so we have to explicitly get the values we care about
+      return {
+        width: value.width,
+        fontBoundingBoxAscent: value.fontBoundingBoxAscent,
+        fontBoundingBoxDescent: value.fontBoundingBoxDescent,
+      } as CanvasTextMetrics;
     }
 
     return value

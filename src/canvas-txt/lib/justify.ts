@@ -1,13 +1,18 @@
 import { isWhitespace } from "./is-whitespace"
 import { Word } from "./models"
-import { trimLine } from "./trim-line"
 
 export interface JustifyLineProps {
-  measureLine: (words: Word[]) => number
+  /** Assumed to have already been trimmed on both ends. */
   line: Word[]
+  /** Width (px) of `spaceChar`.  */
   spaceWidth: number
+  /**
+   * Character used as a whitespace in justification. Will be injected in between Words in
+   *  `line` in order to justify the text on the line within `lineWidth`.
+   */
   spaceChar: string
-  width: number
+  /** Width (px) of the box containing the text (i.e. max `line` width). */
+  boxWidth: number
 }
 
 /**
@@ -63,35 +68,48 @@ const joinWords = function(words: Word[], joiner: Word[]) {
 //  words go on which line, and splitWords() isn't taking justification into account. This
 //  algorithm will justify the line, but not the text as a whole...
 /**
- * This function will insert spaces between words in a line in order
- * to raise the line width to the box width.
- * The spaces are evenly spread in the line, and extra spaces (if any) are inserted
- * between the first words.
+ * Inserts spaces between words in a line in order to raise the line width to the box width.
+ *  The spaces are evenly spread in the line, and extra spaces (if any) are only inserted
+ *  between words, not at either end of the `line`.
  *
- * It returns the justified text.
+ * @returns New array containing original words from the `line` with additional whitespace
+ *  for justification to `boxWidth`.
  */
 export function justifyLine({
-  measureLine,
   line,
   spaceWidth,
   spaceChar,
-  width,
+  boxWidth,
 }: JustifyLineProps) {
-  const trimmedLine = trimLine(line)
-  const words = extractWords(trimmedLine)
-  const numOfWords = words.length - 1
+  const words = extractWords(line)
+  if (words.length <= 1) {
+    return line.concat()
+  }
 
-  if (numOfWords <= 0) return trimmedLine
+  const wordsWidth = words.reduce((width, word) => width + (word.metrics?.width ?? 0), 0)
+  const noOfSpacesToInsert = (boxWidth - wordsWidth) / spaceWidth
 
-  // Width without whitespace
-  const lineWidth = measureLine(words)
-
-  const noOfSpacesToInsert = (width - lineWidth) / spaceWidth
-  const spacesPerWord = Math.floor(noOfSpacesToInsert / numOfWords)
-
-  if (noOfSpacesToInsert < 1) return trimmedLine
-
-  const spaces: Word[] = Array.from({ length: spacesPerWord }, () => ({ text: spaceChar }))
-
-  return joinWords(words, spaces)
+  if (words.length > 2) {
+    // use CEILING so we spread the partial spaces throughout except between the second-last
+    //  and last word so that the spacing is more even and as tight as we can get it to
+    //  the `boxWidth`
+    const spacesPerWord = Math.ceil(noOfSpacesToInsert / (words.length - 1))
+    const spaces: Word[] = Array.from({ length: spacesPerWord }, () => ({ text: spaceChar }))
+    const firstWords = words.slice(0, words.length - 1) // all but last word
+    const firstPart = joinWords(firstWords, spaces)
+    const remainingSpaces = spaces.slice(
+      0,
+      Math.floor(noOfSpacesToInsert) - (firstWords.length - 1) * spaces.length
+    )
+    const lastWord = words[words.length - 1]
+    return [...firstPart, ...remainingSpaces, lastWord]
+  } else {
+    // only 2 words so fill with spaces in between them: use FLOOR to make sure we don't
+    //  go past `boxWidth`
+    const spaces: Word[] = Array.from(
+      { length: Math.floor(noOfSpacesToInsert) },
+      () => ({ text: spaceChar })
+    )
+    return joinWords(words, spaces)
+  }
 }

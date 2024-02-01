@@ -331,18 +331,57 @@ export function splitWords({
     return metrics.width
   }
 
-  const measureLine = (words: Word[]): number =>
-    words.reduce((lineWidth, word) => lineWidth + measureText(word), 0)
+  // measures an entire line's width up to the `boxWidth` as a max, unless `force=true`,
+  //  in which case the entire line is measured regardless of `boxWidth`.
+  //
+  // - Returned `lineWidth` is width up to, but not including, the `splitPoint` (always <= `boxWidth`
+  //   unless the first Word is too wide to fit, in which case `lineWidth` will be that Word's
+  //   width even though it's > `boxWidth`).
+  //   - If `force=true`, will be the full width of the line regardless of `boxWidth`.
+  // - Returned `splitPoint` is index into `words` of the Word immediately FOLLOWING the last
+  //   Word included in the `lineWidth` (and is `words.length` if all Words were included);
+  //  `splitPoint` could also be thought of as the number of `words` included in the `lineWidth`.
+  //  - If `force=true`, will always be `words.length`.
+  const measureLine = (words: Word[], force: boolean = false): {
+    lineWidth: number,
+    splitPoint: number
+  } => {
+    let lineWidth = 0
+    let splitPoint = 0
+    words.every((word, idx) => {
+      const wordWidth = measureText(word)
+      if (!force && (lineWidth + wordWidth > boxWidth)) {
+        // at minimum, MUST include at least first Word, even if it's wider than box width
+        if (idx === 0) {
+          splitPoint = 1
+          lineWidth = wordWidth
+        }
+        // else, `lineWidth` already includes at least one Word so this current Word will
+        //  be the `splitPoint` such that `lineWidth` remains < `boxWidth`
+
+        return false // break
+      }
+
+      splitPoint++
+      lineWidth += wordWidth
+      return true // next
+    });
+
+    return { lineWidth, splitPoint }
+  }
 
   //// main
 
   ctx.save()
 
-  const initialLines = splitIntoLines(trimLine(words), inferWhitespace)
+  // start by trimming the `words` to remove any whitespace at either end, then split the `words`
+  //  into an initial set of lines dictated by explicit hard breaks, if any (if none, we'll have
+  //  one super long line)
+  const hardLines = splitIntoLines(trimLine(words).trimmedLine, inferWhitespace)
   const { width: boxWidth } = positioning
 
   if (
-    initialLines.length <= 0 ||
+    hardLines.length <= 0 ||
     boxWidth <= 0 ||
     positioning.height <= 0 ||
     (baseFormat && typeof baseFormat.fontSize === 'number' && baseFormat.fontSize <= 0)
@@ -362,104 +401,50 @@ export function splitWords({
   const hairWidth = justify ? measureText({ text: HAIR }) : 0
   const wrappedLines: Word[][] = []
 
-  for (const singleLine of initialLines) {
-    let lineWidth = measureLine(singleLine)
+  // now further wrap every hard line to make sure it fits within the `boxWidth`, down to a
+  //  MINIMUM of 1 Word per line
+  for (const hardLine of hardLines) {
+    let { splitPoint } = measureLine(hardLine)
 
     // if the line fits, we're done; else, we have to break it down further to fit
-    //  as best as we can (i.e. minimum one word per line, no breaks within words,
-    //  no leading/pending whitespace)
-    if (lineWidth <= boxWidth) {
-      wrappedLines.push(singleLine)
-      continue
+    //  as best as we can (i.e. MIN one word per line, no breaks within words, no
+    //  leading/pending whitespace)
+    if (splitPoint >= hardLine.length) {
+      wrappedLines.push(hardLine)
+    } else {
+      // shallow clone because we're going to break this line down further to get the best fit
+      let softLine = hardLine.concat()
+      while (splitPoint < softLine.length) {
+        // right-trim what we split off in case we split just after some whitespace
+        const splitLine = trimLine(softLine.slice(0, splitPoint), 'right').trimmedLine
+        wrappedLines.push(splitLine)
+
+        // left-trim what remains in case we split just before some whitespace
+        softLine = trimLine(softLine.slice(splitPoint), 'left').trimmedLine;
+        ({ splitPoint } = measureLine(softLine))
+      }
+
+      // get the last bit of the `softLine`
+      // NOTE: since we started by timming the entire line, and we just left-trimmed
+      //  what remained of `softLine`, there should be no need to trim again
+      wrappedLines.push(softLine)
     }
+  }
 
-    // shallow clone because we're going to break this line down further to get the best fit
-    let tempLine = singleLine.concat()
+  if (justify) {
+    wrappedLines.forEach((wrappedLine, idx) => {
+      const justifiedLine = justifyLine({
+        line: wrappedLine,
+        spaceWidth: hairWidth,
+        spaceChar: HAIR,
+        boxWidth,
+      })
 
-    let splitPoint: number
-    let splitPointWidth: number
-    let lineToPrint: Word[] = []
-
-    while (lineWidth > boxWidth) {
-      splitPoint = Math.floor(tempLine.length / 2)
-      splitPointWidth =
-        splitPoint === 0 ? 0 : measureLine(tempLine.slice(0, splitPoint))
-
-      if (splitPointWidth < boxWidth) {
-        // try to build it back up to fit the max Words we can
-        while (splitPointWidth < boxWidth && splitPoint < tempLine.length) {
-          splitPoint++
-          splitPointWidth = measureLine(tempLine.slice(0, splitPoint))
-        }
-
-        if (splitPointWidth > boxWidth || splitPoint < tempLine.length) {
-          // back one because we blew past `boxWidth` either right on the last Word or before
-          splitPoint--
-        }
-      } else if (splitPointWidth > boxWidth) {
-        // try to shrink it back down to fit (NOTE that if `splitPoint=1`, it means we're
-        //  down to a single Word on the line because we're going to split BEFORE `splitPoint`
-        //  per `Array.slice()`...)
-        while (splitPointWidth > boxWidth && splitPoint > 0) {
-          splitPoint--
-          splitPointWidth = measureLine(tempLine.slice(0, splitPoint))
-        }
-
-        // in this case, we don't need to correct for a missed Word if we reached the
-        //  start of the `tempLine` before we found a width that fit because we'll
-        //  correct that below in the fail safe against a `boxWidth` that's too narrow
-        //  to fit anything
-      }
-
-      // always print at least one word on a line (because the `splitPoint` is the
-      //  word immediately AFTER where the split will take place with `Array.slice()`)
-      // NOTE: we could hit this if the `boxWidth` is too narrow to fit any Word, and
-      //  we have to always consume _at least_ one Word per line, otherwise, we'll get
-      //  into an infinite loop because we'll always have Words left to render
-      if (splitPoint === 0) {
-        splitPoint = 1
-      }
-
-      lineToPrint = trimLine(tempLine.slice(0, splitPoint))
-
-      if (justify) {
-        lineToPrint = justifyLine({
-          measureLine,
-          line: lineToPrint,
-          spaceWidth: hairWidth,
-          spaceChar: HAIR,
-          width: boxWidth,
-        })
-
-        // make sure any new Words used for justification get measured so we're able to
-        //  position them later in positionWords()
-        measureLine(lineToPrint)
-      }
-
-      wrappedLines.push(lineToPrint)
-      tempLine = trimLine(tempLine.slice(splitPoint))
-      lineWidth = measureLine(tempLine)
-    }
-
-    if (lineWidth > 0) {
-      if (justify) {
-        lineToPrint = justifyLine({
-          measureLine,
-          line: tempLine,
-          spaceWidth: hairWidth,
-          spaceChar: HAIR,
-          width: boxWidth,
-        })
-
-        // make sure any new Words used for justification get measured so we're able to
-        //  position them later in positionWords()
-        measureLine(lineToPrint)
-      } else {
-        lineToPrint = tempLine
-      }
-
-      wrappedLines.push(lineToPrint)
-    }
+      // make sure any new Words used for justification get measured so we're able to
+      //  position them later when we generate the render spec
+      measureLine(justifiedLine, true)
+      wrappedLines[idx] = justifiedLine
+    })
   }
 
   const spec = generateSpec({

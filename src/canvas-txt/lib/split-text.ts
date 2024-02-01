@@ -431,19 +431,23 @@ export function splitWords({
     }
   }
 
-  if (justify) {
+  // never justify a single line because there's no other line to visually justify it to
+  if (justify && wrappedLines.length > 1) {
     wrappedLines.forEach((wrappedLine, idx) => {
-      const justifiedLine = justifyLine({
-        line: wrappedLine,
-        spaceWidth: hairWidth,
-        spaceChar: HAIR,
-        boxWidth,
-      })
+      // never justify the last line (common in text editors)
+      if (idx < wrappedLines.length - 1) {
+        const justifiedLine = justifyLine({
+          line: wrappedLine,
+          spaceWidth: hairWidth,
+          spaceChar: HAIR,
+          boxWidth,
+        })
 
-      // make sure any new Words used for justification get measured so we're able to
-      //  position them later when we generate the render spec
-      measureLine(justifiedLine, true)
-      wrappedLines[idx] = justifiedLine
+        // make sure any new Words used for justification get measured so we're able to
+        //  position them later when we generate the render spec
+        measureLine(justifiedLine, true)
+        wrappedLines[idx] = justifiedLine
+      }
     })
   }
 

@@ -40,7 +40,7 @@ const splitIntoLines = function(words: Word[], inferWhitespace: boolean): Word[]
 
   let wasWhitespace = false // true if previous word was whitespace
   words.forEach((word, wordIdx) => {
-    // DEBUG TODO: this is likely a naive split (at least based on character?); should at least
+    // TODO: this is likely a naive split (at least based on character?); should at least
     //  think about this more; text format shouldn't matter on a line break, right (hope not)?
     if (word.text.match(/^\n+$/)) {
       for (let i = 0; i < word.text.length; i++) {
@@ -192,14 +192,35 @@ const generateSpec = function({
     textBaseline,
     textAlign: 'left', // always per current algorithm
     width: boxWidth,
-
-    // DEBUG TODO: `totalHeight` is actually ~5px MORE than it should be purely looking at pixels;
-    //  not sure why that is, other than the use of `fontBounding*` metrics to calculate word
-    //  heights, line heights, and ultimately this total height, which accounts for more than
-    //  purely rendered pixels, but is also necessary for proper positioning and avoiding
-    //  scrunching the text (e.g. if we were to use `actualBounding*` metrics instead
     height: totalHeight
   }
+}
+
+/**
+ * Replacer for use with `JSON.stringify()` to deal with `TextMetrics` objects which
+ *  only have getters/setters instead of value-based properties.
+ * @param key Key being processed in `this`.
+ * @param value Value of `key` in `this`.
+ * @returns Processed value to be serialized, or `undefined` to omit the `key` from the
+ *  serialized object.
+ */
+// CAREFUL: use a `function`, not an arrow function, as stringify() sets its context to
+//  the object being serialized on each call to the replacer
+const jsonReplacer = function (key: string, value: any) {
+  if (key === 'metrics' && value && typeof value === 'object') {
+    // TODO: need better typings here, if possible, so that TSC warns if we aren't
+    //  including a property we should be if a new one is needed in the future (i.e. if
+    //  a new property is added to the `TextMetricsLike` type)
+    // NOTE: TextMetrics objects don't have own-enumerable properties; they only have getters,
+    //  so we have to explicitly get the values we care about
+    return {
+      width: value.width,
+      fontBoundingBoxAscent: value.fontBoundingBoxAscent,
+      fontBoundingBoxDescent: value.fontBoundingBoxDescent,
+    } as CanvasTextMetrics;
+  }
+
+  return value
 }
 
 /**
@@ -213,24 +234,7 @@ const generateSpec = function({
  * @returns Specs serialized as JSON.
  */
 export function specToJson(specs: RenderSpec): string {
-  // CAREFUL: use a `function`, not an arrow function, as stringify() sets its context to
-  //  the object being serialized on each call to the replacer
-  return JSON.stringify(specs, function (key, value) {
-    if (key === 'metrics' && value && typeof value === 'object') {
-      // DEBUG TODO: need better typings here, if possible, so that TSC warns if we aren't
-      //  including a property we should be if a new one is needed in the future (i.e. if
-      //  a new property is added to the `TextMetricsLike` type)
-      // NOTE: TextMetrics objects don't have own-enumerable properties; they only have getters,
-      //  so we have to explicitly get the values we care about
-      return {
-        width: value.width,
-        fontBoundingBoxAscent: value.fontBoundingBoxAscent,
-        fontBoundingBoxDescent: value.fontBoundingBoxDescent,
-      } as CanvasTextMetrics;
-    }
-
-    return value
-  })
+  return JSON.stringify(specs, jsonReplacer)
 }
 
 /**
@@ -244,28 +248,7 @@ export function specToJson(specs: RenderSpec): string {
  * @returns Words serialized as JSON.
  */
 export function wordsToJson(words: Word[]): string {
-  // DEBUG TODO: this is the same replacer implementation as used in specsToJson(); we should
-  //  be able to declare the replacer once, but that requires specifying the `this` context to
-  //  be something other than `any` so that TSC doesn't complain; figure this out later
-
-  // CAREFUL: use a `function`, not an arrow function, as stringify() sets its context to
-  //  the object being serialized on each call to the replacer
-  return JSON.stringify(words, function (key, value) {
-    if (key === 'metrics' && value && typeof value === 'object') {
-      // DEBUG TODO: need better typings here, if possible, so that TSC warns if we aren't
-      //  including a property we should be if a new one is needed in the future (i.e. if
-      //  a new property is added to the `TextMetricsLike` type)
-      // NOTE: TextMetrics objects don't have own-enumerable properties; they only have getters,
-      //  so we have to explicitly get the values we care about
-      return {
-        width: value.width,
-        fontBoundingBoxAscent: value.fontBoundingBoxAscent,
-        fontBoundingBoxDescent: value.fontBoundingBoxDescent,
-      } as CanvasTextMetrics;
-    }
-
-    return value
-  })
+  return JSON.stringify(words, jsonReplacer)
 }
 
 /**

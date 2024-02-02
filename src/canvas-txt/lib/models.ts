@@ -4,8 +4,14 @@ export interface TextFormat {
   /** Font family (CSS value). */
   fontFamily?: string
 
-  // DEBUG TODO: rendering words at different sizes doesn't render well per baseline
-  /** Font size (px). */
+  // TODO: rendering words at different sizes doesn't render well per baseline
+  /**
+   * Font size (px).
+   *
+   * ❗️ Rendering words at different sizes currently does not render well per text baseline.
+   *  Prefer setting a common size as the base formatting for all text instead of setting
+   *  a different size for a subset of Words.
+   */
   fontSize?: number
 
   /** Font weight (CSS value). */

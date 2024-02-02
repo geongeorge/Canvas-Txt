@@ -62,11 +62,6 @@ const joinWords = function(words: Word[], joiner: Word[]) {
   return phrase
 }
 
-// DEBUG TODO: This isn't the greatest "justify" algorithm because it's not able to take
-//  the whole text into account and make smarter splits in order to spread words among lines
-//  in a better way; all it sees is one line, and it relies on splitWords() to decide which
-//  words go on which line, and splitWords() isn't taking justification into account. This
-//  algorithm will justify the line, but not the text as a whole...
 /**
  * Inserts spaces between words in a line in order to raise the line width to the box width.
  *  The spaces are evenly spread in the line, and extra spaces (if any) are only inserted

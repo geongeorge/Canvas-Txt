@@ -116,7 +116,12 @@ onMounted(() => {
         <p>
           Canvas-txt uses the concept of textboxes borrowed from popular image
           editing softwares. You draw a rectangular box then place the text in
-          the box. Turn on the debug mode(below) to see what is happening.
+          the box. Turn on the debug mode (below) to see what is happening.
+        </p>
+        <p>
+          To keep the demo app simple while showing Canvas-txt's rich text features,
+          the word "ipsum" is always rendered in italics and the word "consectetur"
+          always in bold.
         </p>
         <div class="slider">
           <span class="label">Pos X</span>

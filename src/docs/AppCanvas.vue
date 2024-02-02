@@ -69,10 +69,10 @@ function renderText() {
   const words = textToWords(config.text)
   words.forEach((word) => {
     if (word.text === 'ipsum') {
-      word.format = { fontStyle: 'italic' }
+      word.format = { fontStyle: 'italic', fontColor: 'red' }
     }
     if (word.text === 'consectetur') {
-      word.format = { fontWeight: '400' }
+      word.format = { fontWeight: '400', fontColor: 'blue' }
     }
   })
 
@@ -120,8 +120,8 @@ onMounted(() => {
         </p>
         <p>
           To keep the demo app simple while showing Canvas-txt's rich text features,
-          the word "ipsum" is always rendered in italics and the word "consectetur"
-          always in bold.
+          the word "ipsum" is always rendered in italics/red and the word "consectetur"
+          always in bold/blue.
         </p>
         <div class="slider">
           <span class="label">Pos X</span>

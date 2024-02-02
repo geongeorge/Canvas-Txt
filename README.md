@@ -138,6 +138,7 @@ const { drawText, getTextHeight, splitText } = window.canvasTxt
 |  `fontStyle`  |     `''`     | Font style, same as css font-style. Examples: `italic`, `oblique 40deg`        |
 | `fontVariant` |     `''`     | Font variant, same as css font-variant. Examples: `small-caps` |
 | `fontWeight`  |     `'400'`     | Font weight, same as css font-weight. Examples: `bold`, `100`                  |
+| `fontColor`  |     `'black'`     | Font color, same as css color. Examples: `blue`, `#00ff00`                  |
 |   `justify`   |   `false`    | Justify text if `true`, it will insert spaces between words when necessary.    |
 |   `inferWhitespace`   |   `true`    | If whitespace in the text should be inferred. Only applies if the text given to `drawText()` is a `Word[]`. If the text is a `string`, this config setting is ignored.     |
 

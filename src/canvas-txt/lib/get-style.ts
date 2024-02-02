@@ -2,6 +2,7 @@ import { TextFormat } from "./models";
 
 export const DEFAULT_FONT_FAMILY = 'Arial'
 export const DEFAULT_FONT_SIZE = 14
+export const DEFAULT_FONT_COLOR = 'black'
 
 /**
  * Generates a text format based on defaults and any provided overrides.
@@ -16,13 +17,15 @@ export const getTextFormat = function(format?: TextFormat, baseFormat?: TextForm
     fontWeight: '400',
     fontStyle: '',
     fontVariant: '',
+    fontColor: DEFAULT_FONT_COLOR,
   }, baseFormat, format)
 }
 
 /**
  * Generates a [CSS font](https://developer.mozilla.org/en-US/docs/Web/CSS/font) value.
  * @param format
- * @returns Style string to set on context's `font` property.
+ * @returns Style string to set on context's `font` property. Note this __does not include
+ *  the font color__ as that is not part of the CSS font value. Color must be handled separately.
  */
 export const getTextStyle = function({
   fontFamily,

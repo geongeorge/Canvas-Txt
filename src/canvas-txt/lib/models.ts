@@ -24,6 +24,8 @@ export interface TextFormat {
   /** Font variant (CSS value). */
   fontVariant?: 'normal' | 'small-caps' | ''
 
+  fontColor?: string
+
   // NOTE: line height is not currently supported
 }
 

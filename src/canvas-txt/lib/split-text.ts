@@ -300,7 +300,7 @@ export function splitWords({
     if (word.format) {
       ctx.save()
       format = getTextFormat(word.format, baseTextFormat)
-      ctx.font = getTextStyle(format)
+      ctx.font = getTextStyle(format) // `fontColor` is ignored as it has no effect on metrics
     }
 
     const metrics = ctx.measureText(word.text)

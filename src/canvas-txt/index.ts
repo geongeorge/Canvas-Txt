@@ -1,6 +1,6 @@
 import { specToJson, splitWords, splitText, textToWords, wordsToJson } from './lib/split-text'
 import { getTextHeight, getWordHeight } from './lib/text-height'
-import { getTextStyle, getTextFormat } from './lib/get-style'
+import { getTextStyle, getTextFormat, DEFAULT_FONT_COLOR } from './lib/get-style'
 import { CanvasRenderContext, CanvasTextConfig, Text } from './lib/models'
 
 function drawText(
@@ -34,6 +34,7 @@ function drawText(
   ctx.textAlign = textAlign
   ctx.textBaseline = textBaseline
   ctx.font = getTextStyle(baseFormat)
+  ctx.fillStyle = baseFormat.fontColor || DEFAULT_FONT_COLOR
 
   richLines.forEach((line) => {
     line.forEach((pw) => {
@@ -44,6 +45,9 @@ function drawText(
         if (pw.format) {
           ctx.save()
           ctx.font = getTextStyle(pw.format)
+          if (pw.format.fontColor) {
+            ctx.fillStyle = pw.format.fontColor
+          }
         }
         ctx.fillText(pw.word.text, pw.x, pw.y)
         if (pw.format) {

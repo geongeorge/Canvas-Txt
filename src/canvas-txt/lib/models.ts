@@ -88,7 +88,7 @@ export interface CanvasTextConfig extends TextFormat {
    * __NOTE:__ Applies only if `text`, given to `drawText()`, is a `Word[]`. Ignored if it's
    *  a `string`.
    *
-   * True (default) indicates `text` is a `Word` array that contains _mostly_ visible words and
+   * True indicates `text` is a `Word` array that contains _mostly_ visible words and
    *  whitespace should be inferred _unless a word is whitespace (e.g. a new line or tab)_, based
    *  on the context's general text formatting style (i.e. every space will use the font style set
    *  on the context). This makes it easier to provide a `Word[]` because whitespace can be omitted
@@ -169,9 +169,9 @@ export type WordHash = string;
  *  causing an exception.
  */
 export interface TextMetricsLike {
-  fontBoundingBoxAscent: number
-  fontBoundingBoxDescent: number
-  width: number
+  readonly fontBoundingBoxAscent: number
+  readonly fontBoundingBoxDescent: number
+  readonly width: number
 }
 
 export type CanvasTextMetrics = TextMetrics | TextMetricsLike
@@ -183,7 +183,7 @@ export type CanvasTextMetrics = TextMetrics | TextMetricsLike
  */
 export type WordMap = Map<WordHash, { metrics: CanvasTextMetrics, format?: Required<TextFormat> }>
 
-export interface PositionWordsProps {
+export interface GenerateSpecProps {
   /** Words organized/wrapped into lines to be rendered. */
   wrappedLines: Word[][]
 

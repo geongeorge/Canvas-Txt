@@ -70,8 +70,7 @@ function renderText() {
   words.forEach((word) => {
     if (word.text === 'ipsum') {
       word.format = { fontStyle: 'italic', fontColor: 'red' }
-    }
-    if (word.text === 'consectetur') {
+    } else if (word.text === 'consectetur') {
       word.format = { fontWeight: '400', fontColor: 'blue' }
     }
   })

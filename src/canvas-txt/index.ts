@@ -19,7 +19,9 @@ function drawText(
   const { lines: richLines, height: totalHeight, textBaseline, textAlign } = splitWords({
     ctx,
     words: Array.isArray(text) ? text : textToWords(text),
-    inferWhitespace: config.inferWhitespace,
+    inferWhitespace: Array.isArray(text)
+      ? (config.inferWhitespace === undefined || config.inferWhitespace)
+      : undefined, // ignore since `text` is a string; we assume it already has all the whitespace it needs
     x: config.x,
     y: config.y,
     width: config.width,

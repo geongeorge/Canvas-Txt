@@ -2,14 +2,16 @@ import { getTextFormat, getTextStyle } from './get-style'
 import { isWhitespace } from './is-whitespace'
 import { justifyLine } from './justify'
 import {
-  PositionWordsProps,
+  GenerateSpecProps,
   PositionedWord,
   SplitTextProps,
   SplitWordsProps,
   RenderSpec,
   Word,
   WordMap,
-  CanvasTextMetrics
+  CanvasTextMetrics,
+  TextFormat,
+  CanvasRenderContext
 } from './models'
 import { trimLine } from './trim-line'
 
@@ -20,6 +22,21 @@ const HAIR = '\u{200a}'
 const SPACE = ' '
 
 /**
+ * Whether the canvas API being used supports the newer `fontBoundingBox*` properties or not.
+ *
+ * True if it does, false if not; undefined until we determine either way.
+ *
+ * Note about `fontBoundingBoxAscent/Descent`: Only later browsers support this and the Node-based
+ *  `canvas` package does not. Having these properties will have a noticeable increase in performance
+ *  on large pieces of text to render. Failing these, a fallback is used which involves
+ *
+ * @see https://developer.mozilla.org/en-US/docs/Web/API/TextMetrics
+ * @see https://www.npmjs.com/package/canvas
+ */
+let fontBoundingBoxSupported: boolean
+
+/**
+ * @private
  * Generates a word hash for use as a key in a `WordMap`.
  * @param word
  * @returns Hash.
@@ -29,13 +46,14 @@ const getWordHash = function(word: Word) {
 }
 
 /**
+ * @private
  * Splits words into lines based on words that are single newline characters.
  * @param words
- * @param inferWhitespace True if whitespace should be inferred (and injected) based on words;
- *  false if we're to assume the words already include all necessary whitespace.
+ * @param inferWhitespace True (default) if whitespace should be inferred (and injected)
+ *  based on words; false if we're to assume the words already include all necessary whitespace.
  * @returns Words expressed as lines.
  */
-const splitIntoLines = function(words: Word[], inferWhitespace: boolean): Word[][] {
+const splitIntoLines = function(words: Word[], inferWhitespace: boolean = true): Word[][] {
   const lines: Word[][] = [[]]
 
   let wasWhitespace = false // true if previous word was whitespace
@@ -75,6 +93,7 @@ const splitIntoLines = function(words: Word[], inferWhitespace: boolean): Word[]
 }
 
 /**
+ * @private
  * Helper for `splitWords()` that takes the words that have been wrapped into lines and
  *  determines their positions on canvas for future rendering based on alignment settings.
  * @param params
@@ -91,7 +110,7 @@ const generateSpec = function({
     align,
     vAlign,
   }
-}: PositionWordsProps): RenderSpec {
+}: GenerateSpecProps): RenderSpec {
   const xEnd = boxX + boxWidth
   const yEnd = boxY + boxHeight
 
@@ -102,17 +121,16 @@ const generateSpec = function({
   //  so that words, per line, are still aligned to the baseline (as much as possible; if
   //  each word has a different font size, then things will still be offset, but for the
   //  same font size, the baseline should match from left to right)
-  const getHeight = (metrics: CanvasTextMetrics): number =>
-    metrics.fontBoundingBoxAscent + metrics.fontBoundingBoxDescent
+  const getHeight = (word: Word): number =>
+    // NOTE: `metrics` must exist as every `word` MUST have been measured at this point
+    word.metrics!.fontBoundingBoxAscent + word.metrics!.fontBoundingBoxDescent
 
   // max height per line
   const lineHeights = wrappedLines.map(
     (line) =>
       line.reduce(
         (acc, word) => {
-          // NOTE: `metrics` must exist as every `word` MUST have been measured at this point
-          const { metrics } = word
-          return Math.max(acc, getHeight(metrics!))
+          return Math.max(acc, getHeight(word))
         },
         0
       )
@@ -159,7 +177,7 @@ const generateSpec = function({
       const hash = getWordHash(word)
       const { format } = wordMap.get(hash)!
       const x = wordX
-      const height = getHeight(word.metrics!)
+      const height = getHeight(word)
 
       // vertical alignment (defaults to middle)
       let y: number
@@ -197,6 +215,7 @@ const generateSpec = function({
 }
 
 /**
+ * @private
  * Replacer for use with `JSON.stringify()` to deal with `TextMetrics` objects which
  *  only have getters/setters instead of value-based properties.
  * @param key Key being processed in `this`.
@@ -206,7 +225,7 @@ const generateSpec = function({
  */
 // CAREFUL: use a `function`, not an arrow function, as stringify() sets its context to
 //  the object being serialized on each call to the replacer
-const jsonReplacer = function (key: string, value: any) {
+const jsonReplacer = function(key: string, value: any) {
   if (key === 'metrics' && value && typeof value === 'object') {
     // TODO: need better typings here, if possible, so that TSC warns if we aren't
     //  including a property we should be if a new one is needed in the future (i.e. if
@@ -252,6 +271,82 @@ export function wordsToJson(words: Word[]): string {
 }
 
 /**
+ * @private
+ * Measures a Word in a rendering context, assigning its `TextMetrics` to its `metrics` property.
+ * @returns The Word's width, in pixels.
+ */
+const measureWord = function({ ctx, word, wordMap, baseTextFormat }: {
+  ctx: CanvasRenderContext,
+  word: Word,
+  wordMap: WordMap,
+  baseTextFormat: TextFormat,
+}): number {
+  const hash = getWordHash(word);
+
+  if (word.metrics) {
+    // assume Word's text and format haven't changed since last measurement and metrics are good
+
+    // make sure we have the metrics and full formatting cached for other identical Words
+    if (!wordMap.has(hash)) {
+      let format = undefined;
+      if (word.format) {
+        format = getTextFormat(word.format, baseTextFormat)
+      }
+      wordMap.set(hash, { metrics: word.metrics, format })
+    }
+
+    return word.metrics.width
+  }
+
+  // check to see if we have already measured an identical Word
+  if (wordMap.has(hash)) {
+    const { metrics } = wordMap.get(hash)!; // will be there because of `if(has())` check
+    word.metrics = metrics;
+    return metrics.width
+  }
+
+  let ctxSaved = false
+
+  let format = undefined
+  if (word.format) {
+    ctx.save()
+    ctxSaved = true
+    format = getTextFormat(word.format, baseTextFormat)
+    ctx.font = getTextStyle(format) // `fontColor` is ignored as it has no effect on metrics
+  }
+
+  if (!fontBoundingBoxSupported) {
+    // use fallback which comes close enough and still gives us properly-aligned text, albeit
+    //  lines are a couple pixels tighter together
+    if (!ctxSaved) {
+      ctx.save()
+      ctxSaved = true
+    }
+    ctx.textBaseline = 'bottom'
+  }
+
+  const metrics = ctx.measureText(word.text)
+  if (typeof metrics.fontBoundingBoxAscent === 'number') {
+    fontBoundingBoxSupported = true
+  } else {
+    fontBoundingBoxSupported = false
+    // @ts-ignore -- property doesn't exist; we need to polyfill it
+    metrics.fontBoundingBoxAscent = metrics.actualBoundingBoxAscent
+    // @ts-ignore -- property doesn't exist; we need to polyfill it
+    metrics.fontBoundingBoxDescent = 0
+  }
+
+  word.metrics = metrics
+  wordMap.set(hash, { metrics, format })
+
+  if (ctxSaved) {
+    ctx.restore()
+  }
+
+  return metrics.width
+}
+
+/**
  * Splits Words into positioned lines of Words as they need to be rendred in 2D space,
  *  but does not render anything.
  * @param config
@@ -271,49 +366,6 @@ export function splitWords({
 
   //// text measurement
 
-  const measureText = (word: Word): number => {
-    const hash = getWordHash(word);
-
-    if (word.metrics) {
-      // assume Word's text and format haven't changed since last measurement and metrics are good
-
-      // make sure we have the metrics and full formatting cached for other identical Words
-      if (!wordMap.has(hash)) {
-        let format = undefined;
-        if (word.format) {
-          format = getTextFormat(word.format, baseTextFormat)
-        }
-        wordMap.set(hash, { metrics: word.metrics, format })
-      }
-
-      return word.metrics.width
-    }
-
-    // check to see if we have already measured an identical Word
-    if (wordMap.has(hash)) {
-      const { metrics } = wordMap.get(hash)!; // will be there because of `if(has())` check
-      word.metrics = metrics;
-      return metrics.width
-    }
-
-    let format = undefined
-    if (word.format) {
-      ctx.save()
-      format = getTextFormat(word.format, baseTextFormat)
-      ctx.font = getTextStyle(format) // `fontColor` is ignored as it has no effect on metrics
-    }
-
-    const metrics = ctx.measureText(word.text)
-    word.metrics = metrics
-    wordMap.set(hash, { metrics, format })
-
-    if (word.format) {
-      ctx.restore()
-    }
-
-    return metrics.width
-  }
-
   // measures an entire line's width up to the `boxWidth` as a max, unless `force=true`,
   //  in which case the entire line is measured regardless of `boxWidth`.
   //
@@ -332,7 +384,7 @@ export function splitWords({
     let lineWidth = 0
     let splitPoint = 0
     words.every((word, idx) => {
-      const wordWidth = measureText(word)
+      const wordWidth = measureWord({ ctx, word, wordMap, baseTextFormat })
       if (!force && (lineWidth + wordWidth > boxWidth)) {
         // at minimum, MUST include at least first Word, even if it's wider than box width
         if (idx === 0) {
@@ -381,7 +433,9 @@ export function splitWords({
 
   ctx.font = getTextStyle(baseTextFormat)
 
-  const hairWidth = justify ? measureText({ text: HAIR }) : 0
+  const hairWidth = justify
+    ? measureWord({ ctx, word: { text: HAIR }, wordMap, baseTextFormat })
+    : 0
   const wrappedLines: Word[][] = []
 
   // now further wrap every hard line to make sure it fits within the `boxWidth`, down to a

@@ -3,7 +3,9 @@
   "version": "4.1.1",
   "description": "Render multiline textboxes in HTML5 canvas with auto line breaks and better alignment system",
   "files": [
-    "dist"
+    "dist",
+    "LICENSE",
+    "README.md"
   ],
   "scripts": {
     "dev": "vite serve --config config/vite.config.docs.ts",
@@ -28,9 +30,6 @@
     "url": "https://github.com/geongeorge/Canvas-Txt"
   },
   "author": "Geon George <me@geongeorge.com> (https://geongeorge.com)",
-  "contributors": [
-    { "name": "Stefan Cameron", "email": "stefan@stefcameron.com" }
-  ],
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/geongeorge/Canvas-Txt/issues"
@@ -46,6 +45,7 @@
   ],
   "devDependencies": {
     "@types/lodash": "^4.14.182",
+    "@types/offscreencanvas": "^2019.7.3",
     "@vitejs/plugin-vue": "^3.0.1",
     "element-plus": "^2.2.12",
     "lodash": "^4.17.21",

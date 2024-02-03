@@ -10,7 +10,7 @@
   "scripts": {
     "dev": "vite serve --config config/vite.config.docs.ts",
     "dev:node": "vite-node ./src/node-test.ts",
-    "build": "tsc && vite build --emptyOutDir --config config/vite.config.ts && yarn build:dts",
+    "build": "tsc && vite build --emptyOutDir --config config/vite.config.ts && yarn build:dts && cp ./dist/canvas-txt.esm.min.js ./dist/canvas-txt.mjs",
     "build:dts": "tsup src/canvas-txt/index.ts --dts-only && mv dist/index.d.ts dist/canvas-txt.d.ts",
     "build:docs": "tsc && vite build --config config/vite.config.docs.ts",
     "prepare": "yarn build"

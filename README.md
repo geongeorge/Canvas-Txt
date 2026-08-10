@@ -118,8 +118,10 @@ small: keep the box rectangle in your own state, hit-test pointer events
 against its corners and edges, update the state on drag, and re-render (draw
 your selection chrome, then `drawText`, or repaint a cached `layoutText`
 result — `layout.lines` gives you per-line positions if you need
-finer hit-testing, and our [playground](https://canvas-txt.geongeorge.com)
-([source](./apps/docs/src/Playground.vue)) does exactly this in ~30 lines).
+finer hit-testing). **[This JSFiddle](https://jsfiddle.net/geongeorgek/9Ledk1uc/4/)**
+is a complete working example — drag, resize from any handle, live re-wrap —
+in about 100 lines, and our [playground](https://canvas-txt.geongeorge.com)
+([source](./apps/docs/src/Playground.vue)) uses the same approach.
 This is deliberately not part of the library: canvas-txt only handles the
 rendering, because rendering is the one piece that's identical everywhere —
 pointer handling belongs to your app's event model, whether that's React

@@ -1,0 +1,60 @@
+{
+  "name": "canvas-txt",
+  "version": "5.0.0",
+  "description": "Render multiline textboxes in HTML5 canvas with auto line breaks and better alignment system",
+  "type": "module",
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "unpkg": "./dist/index.global.js",
+  "jsdelivr": "./dist/index.global.js",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "sideEffects": false,
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "tsc --noEmit && tsup",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "prepublishOnly": "pnpm build && pnpm test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/geongeorge/Canvas-Txt"
+  },
+  "author": "Geon George <me@geongeorge.com> (https://geongeorge.com)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/geongeorge/Canvas-Txt/issues"
+  },
+  "homepage": "https://canvas-txt.geongeorge.com",
+  "keywords": [
+    "canvas",
+    "text",
+    "multiline",
+    "textbox",
+    "line-break",
+    "word-wrap",
+    "ellipsis",
+    "node-canvas",
+    "offscreencanvas"
+  ],
+  "devDependencies": {
+    "canvas": "^3.2.3",
+    "canvas-hypertxt": "^1.0.3",
+    "canvas-txt-v4": "npm:canvas-txt@4.1.1",
+    "tsup": "^8.5.1",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.10"
+  }
+}

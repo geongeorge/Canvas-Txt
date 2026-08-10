@@ -1,6 +1,6 @@
-name: Node.js Build
+name: CI
 
-on: [push]
+on: [push, pull_request]
 
 jobs:
   build:
@@ -8,16 +8,19 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [17.x]
+        node-version: [20.x, 22.x]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-      - run: yarn install
-      - run: yarn build
-      # - run: npm test
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm test
+      - run: pnpm build
+      - run: pnpm build:docs
         env:
           CI: true

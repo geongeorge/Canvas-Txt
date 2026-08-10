@@ -1,0 +1,77 @@
+:root {
+  /* chrome */
+  --chrome-0: #14161b;
+  --chrome-1: #1b1e25;
+  --chrome-2: #232730;
+  --chrome-3: #2b303b;
+  --line: #2e333d;
+  --line-soft: #262b34;
+  /* ink on chrome */
+  --ink-hi: #e9ebee;
+  --ink-mid: #9aa1ac;
+  --ink-low: #6a7280;
+  /* artboard */
+  --paper: #fafaf7;
+  --paper-dot: #d9d9d2;
+  --paper-ink: #17191c;
+  /* accents */
+  --accent: #0c8ce9; /* the library's own debug blue */
+  --accent-soft: rgba(12, 140, 233, 0.14);
+  --amber: #e8a33d;
+
+  --font-display: 'Fraunces', 'Iowan Old Style', Georgia, serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  --font-ui: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+  --radius: 8px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  background: var(--chrome-0);
+  color: var(--ink-hi);
+  font-family: var(--font-ui);
+  font-size: 15px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--accent);
+  color: #fff;
+}
+
+a {
+  color: inherit;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

@@ -1,59 +1,19 @@
 {
-  "name": "canvas-txt",
-  "version": "4.1.1",
-  "description": "Render multiline textboxes in HTML5 canvas with auto line breaks and better alignment system",
-  "files": [
-    "dist"
-  ],
+  "name": "canvas-txt-monorepo",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@10.12.4",
   "scripts": {
-    "dev": "vite serve --config config/vite.config.docs.ts",
-    "dev:node": "vite-node  ./src/node-test.ts",
-    "build": "tsc && vite build --emptyOutDir --config config/vite.config.ts && yarn build:dts",
-    "build:dts": "tsup src/canvas-txt/index.ts --dts-only && mv dist/index.d.ts dist/canvas-txt.d.ts",
-    "build:docs": "tsc && vite build --config config/vite.config.docs.ts",
-    "prepare": "yarn build"
+    "dev": "pnpm --filter @canvas-txt/docs dev",
+    "build": "pnpm --filter canvas-txt build",
+    "build:docs": "pnpm --filter @canvas-txt/docs build",
+    "test": "pnpm --filter canvas-txt test",
+    "test:watch": "pnpm --filter canvas-txt test:watch"
   },
-  "main": "./dist/canvas-txt.umd.js",
-  "module": "./dist/canvas-txt.mjs",
-  "types": "./dist/canvas-txt.d.ts",
-  "exports": {
-    ".": {
-      "import": "./dist/canvas-txt.mjs",
-      "require": "./dist/canvas-txt.umd.js",
-      "types": "./dist/canvas-txt.d.ts"
-    }
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/geongeorge/Canvas-Txt"
-  },
-  "author": "Geon George <me@geongeorge.com> (https://geongeorge.com)",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/geongeorge/Canvas-Txt/issues"
-  },
-  "homepage": "https://canvas-txt.geongeorge.com",
-  "keywords": [
-    "vue",
-    "react",
-    "library",
-    "canvas",
-    "Multiline",
-    "es6"
-  ],
-  "devDependencies": {
-    "@types/lodash": "^4.14.182",
-    "@vitejs/plugin-vue": "^3.0.1",
-    "canvas": "^2.11.2",
-    "element-plus": "^2.2.12",
-    "lodash": "^4.17.21",
-    "tsup": "^7.2.0",
-    "typescript": "^4.7.4",
-    "unplugin-auto-import": "^0.11.0",
-    "unplugin-vue-components": "^0.22.0",
-    "vite": "^4.4.4",
-    "vite-node": "^0.33.0",
-    "vue": "^3.2.37"
-  },
-  "dependencies": {}
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "canvas",
+      "esbuild"
+    ]
+  }
 }

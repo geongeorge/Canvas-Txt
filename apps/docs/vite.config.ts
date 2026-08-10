@@ -14,4 +14,9 @@ export default defineConfig({
   build: {
     outDir: 'dist',
   },
+  preview: {
+    // The site is static and served publicly, so the DNS-rebinding
+    // host check `vite preview` applies by default isn't needed.
+    allowedHosts: true,
+  },
 })

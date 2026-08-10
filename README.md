@@ -20,6 +20,8 @@ Draw a box, hand it a string — wrapping, alignment, clipping and justification
 <p>
 <a href="https://canvas-txt.geongeorge.com"><b>Live playground</b></a>
 &nbsp;·&nbsp;
+<a href="https://jsfiddle.net/geongeorgek/jey7ah6x/">JSFiddle</a>
+&nbsp;·&nbsp;
 <a href="#api">API</a>
 &nbsp;·&nbsp;
 <a href="#performance">Performance</a>
@@ -87,6 +89,8 @@ const { height, width, lines } = drawText(ctx, 'Hello world', {
   fontSize: 24,
 })
 ```
+
+Try it live in this [JSFiddle](https://jsfiddle.net/geongeorgek/jey7ah6x/).
 
 ### Layout once, paint forever
 

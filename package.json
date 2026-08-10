@@ -3,6 +3,9 @@
   "private": true,
   "type": "module",
   "packageManager": "pnpm@10.12.4",
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "dev": "pnpm --filter @canvas-txt/docs dev",
     "build": "pnpm --filter canvas-txt build",

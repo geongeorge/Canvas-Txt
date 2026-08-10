@@ -1,6 +1,6 @@
 {
   "name": "canvas-txt",
-  "version": "5.0.1",
+  "version": "5.0.2",
   "description": "Render multiline textboxes in HTML5 canvas with auto line breaks and better alignment system",
   "type": "module",
   "files": [
@@ -26,6 +26,8 @@
     "build": "tsc --noEmit && tsup",
     "test": "vitest run",
     "test:watch": "vitest",
+    "prepack": "cp ../../README.md ./README.md",
+    "postpack": "rm -f ./README.md",
     "prepublishOnly": "pnpm build && pnpm test"
   },
   "repository": {

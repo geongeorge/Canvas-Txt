@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="./apps/docs/src/assets/hero-box.png" width="680" alt="A text box drawn by canvas-txt with selection handles and alignment guides, like a text layer in a design tool">
+<img src="https://raw.githubusercontent.com/geongeorge/Canvas-Txt/master/apps/docs/src/assets/hero-box.png" width="680" alt="A text box drawn by canvas-txt with selection handles and alignment guides, like a text layer in a design tool">
 
 # Canvas Txt 📐
 
@@ -26,7 +26,7 @@ Draw a box, hand it a string — wrapping, alignment, clipping and justification
 &nbsp;·&nbsp;
 <a href="#performance">Performance</a>
 &nbsp;·&nbsp;
-<a href="./MIGRATION.md">Migrating from v4</a>
+<a href="https://github.com/geongeorge/Canvas-Txt/blob/master/MIGRATION.md">Migrating from v4</a>
 </p>
 
 </div>
@@ -47,7 +47,7 @@ browsers, workers (`OffscreenCanvas`), node-canvas and skia-canvas.
 
 > [!TIP]
 > Upgrading from v4? Most code keeps working — read the
-> **[migration guide](./MIGRATION.md)** for what changed and what's new.
+> **[migration guide](https://github.com/geongeorge/Canvas-Txt/blob/master/MIGRATION.md)** for what changed and what's new.
 
 ## Why canvas-txt
 
@@ -121,7 +121,7 @@ result — `layout.lines` gives you per-line positions if you need
 finer hit-testing). **[This JSFiddle](https://jsfiddle.net/geongeorgek/9Ledk1uc/4/)**
 is a complete working example — drag, resize from any handle, live re-wrap —
 in about 100 lines, and our [playground](https://canvas-txt.geongeorge.com)
-([source](./apps/docs/src/Playground.vue)) uses the same approach.
+([source](https://github.com/geongeorge/Canvas-Txt/blob/master/apps/docs/src/Playground.vue)) uses the same approach.
 This is deliberately not part of the library: canvas-txt only handles the
 rendering, because rendering is the one piece that's identical everywhere —
 pointer handling belongs to your app's event model, whether that's React
@@ -221,7 +221,7 @@ and lookups — not `measureText` calls. Memoized layouts come back
 Measured against
 [canvas-hypertxt](https://github.com/glideapps/canvas-hypertxt)'s standard
 mode — 5000 iterations, 600-char strings, node-canvas, Apple Silicon
-(benchmark in [`packages/canvas-txt/bench`](./packages/canvas-txt/bench)):
+(benchmark in [`packages/canvas-txt/bench`](https://github.com/geongeorge/Canvas-Txt/blob/master/packages/canvas-txt/bench)):
 
 | Workload                | canvas-txt v5 | canvas-hypertxt | canvas-txt v4 |
 | ----------------------- | ------------: | --------------: | ------------: |
@@ -245,8 +245,8 @@ Unicode-correct.
 ## Contributing
 
 The repo is a pnpm workspace: the library lives in
-[`packages/canvas-txt`](./packages/canvas-txt), the playground in
-[`apps/docs`](./apps/docs).
+[`packages/canvas-txt`](https://github.com/geongeorge/Canvas-Txt/blob/master/packages/canvas-txt), the playground in
+[`apps/docs`](https://github.com/geongeorge/Canvas-Txt/blob/master/apps/docs).
 
 ```bash
 pnpm install
@@ -257,4 +257,4 @@ pnpm build      # esm + cjs + iife + d.ts
 
 ## License
 
-[MIT](./LICENSE) © [Geon George](https://geongeorge.com)
+[MIT](https://github.com/geongeorge/Canvas-Txt/blob/master/LICENSE) © [Geon George](https://geongeorge.com)

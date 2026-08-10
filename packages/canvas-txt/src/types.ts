@@ -39,6 +39,8 @@ export interface TextContext {
   moveTo?(x: number, y: number): void
   lineTo?(x: number, y: number): void
   stroke?(): void
+  setLineDash?(segments: number[]): void
+  globalAlpha?: number
 }
 
 export interface TextStyle {

@@ -1,8 +1,10 @@
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref, watch } from 'vue'
+import { computed, onMounted, onUnmounted, reactive, ref, watch } from 'vue'
 import { layoutText, drawTextLayout, type TextLayout } from 'canvas-txt'
 
-const SIZE = 560
+// The stage height is fixed; the width follows the artboard's rendered size
+const STAGE_H = 560
+const stageW = ref(560)
 
 const canvasEl = ref<HTMLCanvasElement | null>(null)
 let ctx: CanvasRenderingContext2D | null = null
@@ -31,8 +33,13 @@ const defaults = {
 
 const state = reactive({ ...defaults })
 
+function centerBox() {
+  state.x = Math.max(0, Math.round((stageW.value - state.w) / 2))
+}
+
 function reset() {
   Object.assign(state, defaults)
+  centerBox()
 }
 
 const stats = reactive({ lines: 0, height: 0, clipped: false, ms: 0 })
@@ -102,7 +109,7 @@ let lastLayout: TextLayout | null = null
 function render() {
   if (!ctx) return
   const c = ctx
-  c.clearRect(0, 0, SIZE, SIZE)
+  c.clearRect(0, 0, stageW.value, STAGE_H)
 
   const t0 = performance.now()
   const layout = layoutText(c, state.text, layoutConfig())
@@ -131,14 +138,30 @@ function scheduleRender() {
   raf = requestAnimationFrame(render)
 }
 
-onMounted(() => {
-  const el = canvasEl.value!
+let resizeObserver: ResizeObserver | null = null
+
+function resizeCanvas() {
+  const el = canvasEl.value
+  if (!el) return
+  stageW.value = Math.max(1, Math.floor(el.parentElement?.clientWidth ?? STAGE_H))
   const dpr = window.devicePixelRatio || 1
-  el.width = SIZE * dpr
-  el.height = SIZE * dpr
+  el.width = stageW.value * dpr
+  el.height = STAGE_H * dpr
   ctx = el.getContext('2d')!
-  ctx.scale(dpr, dpr)
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
   render()
+}
+
+onMounted(() => {
+  resizeCanvas()
+  centerBox()
+  resizeObserver = new ResizeObserver(resizeCanvas)
+  resizeObserver.observe(canvasEl.value!.parentElement!)
+})
+
+onUnmounted(() => {
+  resizeObserver?.disconnect()
+  cancelAnimationFrame(raf)
 })
 
 watch(state, scheduleRender)
@@ -187,11 +210,7 @@ async function copy(text: string, flag: typeof copiedCode) {
   <section class="playground" aria-label="canvas-txt playground">
     <div class="stage">
       <div class="artboard">
-        <canvas
-          ref="canvasEl"
-          :style="{ width: '100%', maxWidth: SIZE + 'px' }"
-          aria-label="Live canvas preview"
-        ></canvas>
+        <canvas ref="canvasEl" aria-label="Live canvas preview"></canvas>
       </div>
       <div class="statusbar" role="status">
         <span class="stat">
@@ -229,14 +248,14 @@ async function copy(text: string, flag: typeof copiedCode) {
           <input
             type="range"
             :min="0"
-            :max="SIZE"
+            :max="k === 'x' || k === 'w' ? stageW : STAGE_H"
             v-model.number="state[k]"
           />
           <input
             type="number"
             class="num"
             :min="0"
-            :max="SIZE"
+            :max="k === 'x' || k === 'w' ? stageW : STAGE_H"
             v-model.number="state[k]"
           />
         </label>
@@ -423,13 +442,14 @@ async function copy(text: string, flag: typeof copiedCode) {
   background-size: 20px 20px;
   border-radius: var(--radius);
   padding: 0;
-  display: flex;
-  justify-content: center;
   border: 1px solid var(--line);
+  overflow: hidden;
 }
 
 canvas {
   display: block;
+  width: 100%;
+  height: 560px;
 }
 
 .statusbar {

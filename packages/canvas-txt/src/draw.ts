@@ -92,35 +92,37 @@ function drawDebug(ctx: TextContext, config: DrawTextConfig): void {
   const { x, y, width, height } = config
   const prevStroke = ctx.strokeStyle
   const prevLineWidth = ctx.lineWidth
+  const prevAlpha = ctx.globalAlpha
   ctx.strokeStyle = DEBUG_COLOR
   ctx.lineWidth = 1
 
-  // Text box
-  ctx.strokeRect(x, y, width, height)
+  // Text box — the 0.5 offsets keep 1px strokes on the pixel grid so they
+  // render as one crisp row instead of blurring across two
+  ctx.strokeRect(x + 0.5, y + 0.5, width, height)
 
-  // Horizontal center guide
+  // Alignment guides, dashed and dimmed where the context supports it
   const anchorX =
     config.align === 'left'
       ? x
       : config.align === 'right'
         ? x + width
         : x + width / 2
-  ctx.beginPath()
-  ctx.moveTo(anchorX, y)
-  ctx.lineTo(anchorX, y + height)
-  ctx.stroke()
-
-  // Vertical anchor guide
   const anchorY =
     config.vAlign === 'top'
       ? y
       : config.vAlign === 'bottom'
         ? y + height
         : y + height / 2
+  ctx.setLineDash?.([4, 4])
+  if (prevAlpha !== undefined) ctx.globalAlpha = 0.5
   ctx.beginPath()
-  ctx.moveTo(x, anchorY)
-  ctx.lineTo(x + width, anchorY)
+  ctx.moveTo(anchorX + 0.5, y)
+  ctx.lineTo(anchorX + 0.5, y + height)
+  ctx.moveTo(x, anchorY + 0.5)
+  ctx.lineTo(x + width, anchorY + 0.5)
   ctx.stroke()
+  ctx.setLineDash?.([])
+  if (prevAlpha !== undefined) ctx.globalAlpha = prevAlpha
 
   if (prevStroke !== undefined) ctx.strokeStyle = prevStroke
   if (prevLineWidth !== undefined) ctx.lineWidth = prevLineWidth

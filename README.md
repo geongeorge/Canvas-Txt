@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="./apps/docs/src/assets/featured.png" width="600" alt="canvas-txt — multiline text on HTML5 canvas">
+<img src="./apps/docs/src/assets/hero-box.png" width="680" alt="A text box drawn by canvas-txt with selection handles and alignment guides, like a text layer in a design tool">
 
 # Canvas Txt 📐
 
@@ -105,6 +105,22 @@ drawTextLayout(ctx, layout, { x: 400, y: 40, style: { fill: '#888' } })
 // layout.lines → [{ text, x, y, width, words }] — hit-test it, decorate it
 // layout.height, layout.width, layout.clipped
 ```
+
+### Interactive text boxes
+
+If you want the box in the image above — draggable anchors that control
+`x`/`y`/`width`/`height` — that interaction layer is yours to build, and it's
+small: keep the box rectangle in your own state, hit-test pointer events
+against its corners and edges, update the state on drag, and re-render (draw
+your selection chrome, then `drawText`, or repaint a cached `layoutText`
+result — `layout.lines` gives you per-line positions if you need
+finer hit-testing, and our [playground](https://canvas-txt.geongeorge.com)
+([source](./apps/docs/src/Playground.vue)) does exactly this in ~30 lines).
+This is deliberately not part of the library: canvas-txt only handles the
+rendering, because rendering is the one piece that's identical everywhere —
+pointer handling belongs to your app's event model, whether that's React
+state, a Vue component, or an immediate-mode game loop. Staying out of it is
+what lets canvas-txt drop into any of them.
 
 ### Node
 

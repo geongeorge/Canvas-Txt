@@ -166,6 +166,106 @@ onUnmounted(() => {
 
 watch(state, scheduleRender)
 
+/* ------- pointer interaction: drag the box, resize from handles ------- */
+
+const MIN_BOX = 40
+const GRAB = 8
+
+type DragTarget = 'move' | 'nw' | 'n' | 'ne' | 'w' | 'e' | 'sw' | 's' | 'se'
+
+const CURSORS: Record<DragTarget, string> = {
+  nw: 'nwse-resize',
+  se: 'nwse-resize',
+  ne: 'nesw-resize',
+  sw: 'nesw-resize',
+  n: 'ns-resize',
+  s: 'ns-resize',
+  w: 'ew-resize',
+  e: 'ew-resize',
+  move: 'move',
+}
+
+let dragging: {
+  target: DragTarget
+  mx: number
+  my: number
+  start: { x: number; y: number; w: number; h: number }
+} | null = null
+
+function handlePoints(): Array<{ id: DragTarget; hx: number; hy: number }> {
+  const { x, y, w, h } = state
+  return [
+    { id: 'nw', hx: x, hy: y },
+    { id: 'n', hx: x + w / 2, hy: y },
+    { id: 'ne', hx: x + w, hy: y },
+    { id: 'w', hx: x, hy: y + h / 2 },
+    { id: 'e', hx: x + w, hy: y + h / 2 },
+    { id: 'sw', hx: x, hy: y + h },
+    { id: 's', hx: x + w / 2, hy: y + h },
+    { id: 'se', hx: x + w, hy: y + h },
+  ]
+}
+
+function pickTarget(mx: number, my: number): DragTarget | null {
+  for (const p of handlePoints()) {
+    if (Math.abs(mx - p.hx) <= GRAB && Math.abs(my - p.hy) <= GRAB) return p.id
+  }
+  const { x, y, w, h } = state
+  if (mx >= x && mx <= x + w && my >= y && my <= y + h) return 'move'
+  return null
+}
+
+function pointerPos(e: PointerEvent) {
+  const rect = canvasEl.value!.getBoundingClientRect()
+  return { mx: e.clientX - rect.left, my: e.clientY - rect.top }
+}
+
+function onPointerDown(e: PointerEvent) {
+  const { mx, my } = pointerPos(e)
+  const target = pickTarget(mx, my)
+  if (!target) return
+  dragging = {
+    target,
+    mx,
+    my,
+    start: { x: state.x, y: state.y, w: state.w, h: state.h },
+  }
+  canvasEl.value!.setPointerCapture(e.pointerId)
+  e.preventDefault()
+}
+
+function onPointerMove(e: PointerEvent) {
+  const { mx, my } = pointerPos(e)
+  if (!dragging) {
+    const target = pickTarget(mx, my)
+    canvasEl.value!.style.cursor = target ? CURSORS[target] : 'default'
+    return
+  }
+  const dx = mx - dragging.mx
+  const dy = my - dragging.my
+  const s = dragging.start
+  const t = dragging.target
+  if (t === 'move') {
+    state.x = Math.round(s.x + dx)
+    state.y = Math.round(s.y + dy)
+  } else {
+    if (t.includes('w')) {
+      state.x = Math.round(Math.min(s.x + dx, s.x + s.w - MIN_BOX))
+      state.w = Math.round(Math.max(MIN_BOX, s.w - dx))
+    }
+    if (t.includes('e')) state.w = Math.round(Math.max(MIN_BOX, s.w + dx))
+    if (t.includes('n')) {
+      state.y = Math.round(Math.min(s.y + dy, s.y + s.h - MIN_BOX))
+      state.h = Math.round(Math.max(MIN_BOX, s.h - dy))
+    }
+    if (t.includes('s')) state.h = Math.round(Math.max(MIN_BOX, s.h + dy))
+  }
+}
+
+function onPointerUp() {
+  dragging = null
+}
+
 /* ------- generated code ------- */
 
 const code = computed(() => {
@@ -210,7 +310,14 @@ async function copy(text: string, flag: typeof copiedCode) {
   <section class="playground" aria-label="canvas-txt playground">
     <div class="stage">
       <div class="artboard">
-        <canvas ref="canvasEl" aria-label="Live canvas preview"></canvas>
+        <canvas
+          ref="canvasEl"
+          aria-label="Live canvas preview — drag the box or its handles"
+          @pointerdown="onPointerDown"
+          @pointermove="onPointerMove"
+          @pointerup="onPointerUp"
+          @pointercancel="onPointerUp"
+        ></canvas>
       </div>
       <div class="statusbar" role="status">
         <span class="stat">
@@ -450,6 +557,7 @@ canvas {
   display: block;
   width: 100%;
   height: 560px;
+  touch-action: none; /* let pointer drags own the gesture on touch */
 }
 
 .statusbar {
